@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode
+package org.firstinspires.ftc.teamcode.extra
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.ElapsedTime
 
-@TeleOp(name = "TelemetryOnlyTeleOp", group = "TestOpMode")
+@TeleOp(name = "TelemetryOnlyTeleOp", group = "Extra")
 class TelemetryOnlyTeleOp() : OpMode() {
     private val stopwatch: ElapsedTime = ElapsedTime()
 
@@ -14,7 +14,7 @@ class TelemetryOnlyTeleOp() : OpMode() {
     }
 
     override fun loop() {
-        telemetry.addData("Telemetry:", "Elapsed time: (%.2f)", stopwatch.seconds())
+        telemetry.addData("Telemetry:", "Elapsed time: ${stopwatch.seconds()}")
     }
 
 }
