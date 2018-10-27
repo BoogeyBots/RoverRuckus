@@ -15,6 +15,10 @@ class Pushbot : OpMode() {
     }
 
     override fun loop() {
+        // ==================
+        //      MOVEMENT
+        // ==================
+
         /** How much does it want to move forward - using LT */
         val throttle: Double = gamepad1.left_trigger.toDouble()
         /** How much does it want to move forward - using LT */
@@ -26,6 +30,19 @@ class Pushbot : OpMode() {
         // Prevent overflow by clipping the values between +1 and -1
         hardware.leftMotorPower = Range.clip(throttle - brake + horizontalMovement, 1.0, -1.0)
         hardware.rightMotorPower = Range.clip(throttle - brake - horizontalMovement, 1.0, -1.0)
+
+        // ==================
+        //      GRABBING
+        // ==================
+
+        // If A is pressed then move the arm down, if Y is pressed, move it up
+        val armPower = when {
+            gamepad1.a -> hardware.ARM_POWER
+            gamepad1.y -> -hardware.ARM_POWER
+            else -> 0.0
+        }
+
+        hardware.armMotorPower = armPower
 
         // Debugging data
         telemetry.addData("Movement:", "Forward: ${throttle + brake}, Sideways: $throttle")

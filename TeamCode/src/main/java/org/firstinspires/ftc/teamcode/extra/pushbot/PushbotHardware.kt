@@ -17,10 +17,13 @@ class PushbotHardware {
     lateinit var leftClawServo: Servo
     lateinit var rightClawServo: Servo
 
+    val CLAW_SPEED: Double = 0.0
+    val ARM_POWER: Double = 0.5
+
     var leftMotorPower: Double = 0.0
         // Custom setters for caching system
         set(value) {
-            // Only set the power of the motor if the last's "frame" power is
+            // Only set the power of the motor if the last "frame's" power is
             // different from the current one
             if (value != field) {
                 field = value
