@@ -28,8 +28,8 @@ class Pushbot : OpMode() {
         val horizontalMovement: Double = -gamepad1.right_stick_x.toDouble()
 
         // Prevent overflow by clipping the values between +1 and -1
-        hardware.leftMotorPower = Range.clip(throttle - brake + horizontalMovement, 1.0, -1.0)
-        hardware.rightMotorPower = Range.clip(throttle - brake - horizontalMovement, 1.0, -1.0)
+        hardware.leftMotorPower = Range.clip(throttle - brake + horizontalMovement, -1.0, 1.0)
+        hardware.rightMotorPower = Range.clip(throttle - brake - horizontalMovement, -1.0, 1.0)
 
         // ==================
         //      GRABBING
@@ -45,6 +45,6 @@ class Pushbot : OpMode() {
         hardware.armMotorPower = armPower
 
         // Debugging data
-        telemetry.addData("Movement:", "Forward: ${throttle + brake}, Sideways: $throttle")
+        telemetry.addData("Movement:", "Forward: ${throttle - brake}, Sideways: $horizontalMovement")
     }
 }
