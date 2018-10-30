@@ -17,8 +17,10 @@ class PushbotHardware {
     lateinit var leftClawServo: Servo
     lateinit var rightClawServo: Servo
 
-    val CLAW_SPEED: Double = 0.0
+    val CLAW_SPEED: Double = 0.02
     val ARM_POWER: Double = 0.5
+
+    val MID_SERVO: Double = 0.5
 
     var leftMotorPower: Double = 0.0
         // Custom setters for caching system

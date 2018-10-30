@@ -9,6 +9,8 @@ class Pushbot : OpMode() {
     /** The Hardware of the robot */
     private val hardware = PushbotHardware()
 
+    private var clawOffset = 0.0
+
     override fun init() {
         // Initialize the hardware (all the motors) using the TeleOp's hardware map
         hardware.init(hardwareMap)
@@ -43,6 +45,16 @@ class Pushbot : OpMode() {
         }
 
         hardware.armMotorPower = armPower
+
+        clawOffset += when {
+            gamepad1.right_bumper -> hardware.CLAW_SPEED
+            gamepad1.left_bumper -> -hardware.CLAW_SPEED
+            else -> 0.0
+        }
+
+        clawOffset = Range.clip(clawOffset, -0.5, 0.5)
+        hardware.leftClawServo.position = hardware.MID_SERVO + clawOffset
+        hardware.rightClawServo.position = hardware.MID_SERVO - clawOffset
 
         // Debugging data
         telemetry.addData("Movement:", "Forward: ${throttle - brake}, Sideways: $horizontalMovement")
