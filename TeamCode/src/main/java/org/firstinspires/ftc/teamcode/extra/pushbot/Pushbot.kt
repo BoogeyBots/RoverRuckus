@@ -24,7 +24,7 @@ class Pushbot : OpMode() {
         /** How much does it want to move forward - using LT */
         val throttle: Double = gamepad1.left_trigger.toDouble()
         /** How much does it want to move forward - using LT */
-        val brake: Double = gamepad1.left_trigger.toDouble()
+        val brake: Double = gamepad1.right_trigger.toDouble()
 
         /** How much does it want move left-right - using the right stick's X axis */
         val horizontalMovement: Double = -gamepad1.right_stick_x.toDouble()
@@ -46,11 +46,8 @@ class Pushbot : OpMode() {
 
         hardware.armMotorPower = armPower
 
-        clawOffset += when {
-            gamepad1.right_bumper -> hardware.CLAW_SPEED
-            gamepad1.left_bumper -> -hardware.CLAW_SPEED
-            else -> 0.0
-        }
+        // Control claw movement using the left stick's x axis
+        clawOffset += -gamepad1.left_stick_x * hardware.CLAW_SPEED
 
         clawOffset = Range.clip(clawOffset, -0.5, 0.5)
         hardware.leftClawServo.position = hardware.MID_SERVO + clawOffset

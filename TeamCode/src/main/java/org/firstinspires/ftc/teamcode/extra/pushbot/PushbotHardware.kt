@@ -1,9 +1,6 @@
 package org.firstinspires.ftc.teamcode.extra.pushbot
 
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.HardwareMap
-import com.qualcomm.robotcore.hardware.Servo
+import com.qualcomm.robotcore.hardware.*
 
 /**
  * This class holds all the objects that represent the robot's hardware (eg. motors)
@@ -16,6 +13,10 @@ class PushbotHardware {
 
     lateinit var leftClawServo: Servo
     lateinit var rightClawServo: Servo
+    lateinit var leftStopperServo: Servo
+    lateinit var rightStopperServo: Servo
+
+    lateinit var colorSensor: ColorSensor
 
     val CLAW_SPEED: Double = 0.02
     val ARM_POWER: Double = 0.5
@@ -60,6 +61,9 @@ class PushbotHardware {
         armMotor = hardwareMap.get(DcMotor::class.java, "arm_motor")
         leftClawServo = hardwareMap.get(Servo::class.java, "left_claw_servo")
         rightClawServo = hardwareMap.get(Servo::class.java, "right_claw_servo")
+        leftStopperServo = hardwareMap.get(Servo::class.java, "left_stopper_servo")
+        rightStopperServo = hardwareMap.get(Servo::class.java, "right_stopper_servo")
+        colorSensor = hardwareMap.get(ColorSensor::class.java, "color_sensor")
 
         // Set initial powers for the motors
         leftMotor.power = 0.0
@@ -69,6 +73,7 @@ class PushbotHardware {
         // The motors have opposite directions to make the wheels run in the same direction
         leftMotor.direction = DcMotorSimple.Direction.FORWARD
         rightMotor.direction = DcMotorSimple.Direction.REVERSE
+        armMotor.direction = DcMotorSimple.Direction.REVERSE
 
         // Idk what an encoder is but Andrei said we don't use them
         leftMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
