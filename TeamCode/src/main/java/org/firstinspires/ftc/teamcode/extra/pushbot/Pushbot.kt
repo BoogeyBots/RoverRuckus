@@ -31,8 +31,8 @@ class Pushbot : OpMode() {
         val horizontalMovement: Double = -gamepad1.right_stick_x.toDouble()
 
         // Prevent overflow by clipping the values between +1 and -1
-        hardware.leftMotorPower = Range.clip(throttle - brake + horizontalMovement, -1.0, 1.0)
-        hardware.rightMotorPower = Range.clip(throttle - brake - horizontalMovement, -1.0, 1.0)
+        hardware.leftMotorPower = Range.clip(throttle - brake - horizontalMovement, -1.0, 1.0)
+        hardware.rightMotorPower = Range.clip(throttle - brake + horizontalMovement, -1.0, 1.0)
 
         // ==================
         //      GRABBING
@@ -40,15 +40,15 @@ class Pushbot : OpMode() {
 
         // If A is pressed then move the arm down, if Y is pressed, move it up
         val armPower = when {
-            gamepad1.a -> hardware.ARM_POWER
-            gamepad1.y -> -hardware.ARM_POWER
+            gamepad2.a -> hardware.ARM_POWER
+            gamepad2.y -> -hardware.ARM_POWER
             else -> 0.0
         }
 
         hardware.armMotorPower = armPower
 
         // Control claw movement using the left stick's x axis
-        clawOffset += -gamepad1.left_stick_x * hardware.CLAW_SPEED
+        clawOffset += -gamepad2.left_stick_x * hardware.CLAW_SPEED
 
         clawOffset = Range.clip(clawOffset, -0.5, 0.5)
         hardware.leftClawServo.position = hardware.MID_SERVO + clawOffset
