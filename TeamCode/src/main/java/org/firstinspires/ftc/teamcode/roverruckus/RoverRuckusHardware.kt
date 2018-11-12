@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.hardware.Servo
 
 
-class RobotHardware {
+class RoverRuckusHardware {
     private lateinit var leftMotor: DcMotor
     private lateinit var rightMotor: DcMotor
 

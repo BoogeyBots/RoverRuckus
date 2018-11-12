@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap
 import com.qualcomm.robotcore.util.Range
 
 @TeleOp(name = "Robot", group = "Rover Ruckus")
-class Robot : OpMode() {
-    private val hardware = RobotHardware()
+class RoverRuckus : OpMode() {
+    private val hardware = RoverRuckusHardware()
 
     override fun init() {
         hardware.init(hardwareMap)
@@ -20,7 +20,7 @@ class Robot : OpMode() {
 
         hardware.leftMotorPower = Range.clip(throttle - brake - horizontalMovement, -1.0, 1.0)
         hardware.rightMotorPower = Range.clip(throttle - brake + horizontalMovement, -1.0, 1.0)
-        
+
         telemetry.addData("Movement", "Forward ${throttle-brake}, Sideways $horizontalMovement")
     }
 }
