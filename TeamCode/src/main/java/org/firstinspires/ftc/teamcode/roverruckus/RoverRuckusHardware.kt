@@ -10,10 +10,10 @@ class RoverRuckusHardware {
     private lateinit var leftMotor: DcMotor
     private lateinit var rightMotor: DcMotor
 
-    lateinit var leftServo: Servo
-    lateinit var rightServo: Servo
-    lateinit var leftServo2: Servo
-    lateinit var rightServo2: Servo
+    lateinit var leftFrontServo: Servo
+    lateinit var rightFrontServo: Servo
+    lateinit var leftBackServo: Servo
+    lateinit var rightBackServo: Servo
 
     var leftMotorPower: Double = 0.0
         // Custom setters for caching system
@@ -35,12 +35,12 @@ class RoverRuckusHardware {
         }
 
     fun init(hardwareMap: HardwareMap){
-        leftMotor=hardwareMap.get(DcMotor:: class.java, "left_motor")
+        leftMotor=hardwareMap.get(DcMotor:: class.java, "left_")
         rightMotor = hardwareMap.get(DcMotor::class.java, "right_motor")
-        leftServo = hardwareMap.get(Servo::class.java, "left_servo")
-        leftServo2 = hardwareMap.get(Servo::class.java, "left_servo_2")
-        rightServo = hardwareMap.get(Servo::class.java, "right_servo")
-        rightServo2 = hardwareMap.get(Servo::class.java, "right_servo_2")
+        leftFrontServo = hardwareMap.get(Servo::class.java, "left_servo")
+        rightFrontServo = hardwareMap.get(Servo::class.java, "left_servo_2")
+        leftBackServo = hardwareMap.get(Servo::class.java, "right_servo")
+        rightBackServo = hardwareMap.get(Servo::class.java, "right_servo_2")
 
         leftMotor.power = 0.0
         rightMotor.power = 0.0
@@ -50,8 +50,6 @@ class RoverRuckusHardware {
 
         leftMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         rightMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-
-
     }
 
 }
