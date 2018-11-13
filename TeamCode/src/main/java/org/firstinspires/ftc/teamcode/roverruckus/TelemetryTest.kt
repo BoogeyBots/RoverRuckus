@@ -9,7 +9,7 @@ class TelemetryTest : OpMode() {
     val elapsedTime: ElapsedTime = ElapsedTime()
 
     override fun init() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
     override fun start() {

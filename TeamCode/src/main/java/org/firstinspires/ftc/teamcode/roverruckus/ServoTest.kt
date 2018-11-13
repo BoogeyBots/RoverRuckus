@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.Range
 
-@Autonomous(name = "ServoTesting", group = "roverruckus")
-class ServoTesting : OpMode() {
+@Autonomous(name = "ServoTest", group = "roverruckus")
+class ServoTest : OpMode() {
     private lateinit var blServo: Servo
     private lateinit var brServo: Servo
     private lateinit var flServo: Servo
@@ -35,7 +35,13 @@ class ServoTesting : OpMode() {
     }
 
     override fun loop() {
-
+        printDebugInfo()
     }
 
+    private fun printDebugInfo() {
+        telemetry.addData("FL position:", flServo.position)
+        telemetry.addData("FR position:", frServo.position)
+        telemetry.addData("BL position:", blServo.position)
+        telemetry.addData("BR position:", brServo.position)
+    }
 }
