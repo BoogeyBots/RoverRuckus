@@ -10,10 +10,10 @@ class RoverRuckusHardware {
     private lateinit var leftMotor: DcMotor
     private lateinit var rightMotor: DcMotor
 
-    private lateinit var leftFrontServo: Servo
-    private lateinit var rightFrontServo: Servo
-    private lateinit var leftBackServo: Servo
-    private lateinit var rightBackServo: Servo
+    private lateinit var flServo: Servo
+    private lateinit var frServo: Servo
+    private lateinit var blServo: Servo
+    private lateinit var brServo: Servo
 
     var leftMotorPower: Double = 0.0
         // Custom setters for caching system
@@ -34,13 +34,45 @@ class RoverRuckusHardware {
             }
         }
 
+    var blServoPos: Double = 0.0
+        set(value) {
+            if (value != field) {
+                field = value
+                blServo.position = value
+            }
+        }
+
+    var brServoPos: Double = 0.0
+        set(value) {
+            if (value != field) {
+                field = value
+                brServo.position = value
+            }
+        }
+
+    var flServoPos: Double = 0.0
+        set(value) {
+            if (value != field) {
+                field = value
+                flServo.position = value
+            }
+        }
+
+    var frServoPos: Double  = 0.0
+        set(value) {
+            if (value != field) {
+                field = value
+                frServo.position = value
+            }
+        }
+
     fun init(hardwareMap: HardwareMap){
-        leftMotor=hardwareMap.get(DcMotor::class.java, "left_")
-        rightMotor = hardwareMap.get(DcMotor::class.java, "right_motor")
-        leftFrontServo = hardwareMap.get(Servo::class.java, "left_servo")
-        rightFrontServo = hardwareMap.get(Servo::class.java, "left_servo_2")
-        leftBackServo = hardwareMap.get(Servo::class.java, "right_servo")
-        rightBackServo = hardwareMap.get(Servo::class.java, "right_servo_2")
+        leftMotor = hardwareMap.get(DcMotor::class.java, "l_motor")
+        rightMotor = hardwareMap.get(DcMotor::class.java, "r_motor")
+        flServo = hardwareMap.get(Servo::class.java, "fl_servo")
+        frServo = hardwareMap.get(Servo::class.java, "fr_servo")
+        blServo = hardwareMap.get(Servo::class.java, "bl_servo")
+        brServo = hardwareMap.get(Servo::class.java, "br_servo")
 
         leftMotor.power = 0.0
         rightMotor.power = 0.0

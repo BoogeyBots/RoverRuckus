@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.extra.pushbot
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.Range
 
 @TeleOp(name = "Pushbot", group = "PUSHBOT")
+@Disabled
 class Pushbot : OpMode() {
     /** The Hardware of the robot */
     private val hardware = PushbotHardware()
