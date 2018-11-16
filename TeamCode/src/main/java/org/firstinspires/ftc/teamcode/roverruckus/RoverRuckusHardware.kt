@@ -12,8 +12,6 @@ class RoverRuckusHardware {
 
     private lateinit var flServo: Servo
     private lateinit var frServo: Servo
-    private lateinit var blServo: Servo
-    private lateinit var brServo: Servo
 
     var leftMotorPower: Double = 0.0
         // Custom setters for caching system
@@ -34,51 +32,33 @@ class RoverRuckusHardware {
             }
         }
 
-    var blServoPos: Double = 0.0
-        set(value) {
-            if (value != field) {
-                field = value
-                blServo.position = value
-            }
-        }
-
-    var brServoPos: Double = 0.0
-        set(value) {
-            if (value != field) {
-                field = value
-                brServo.position = value
-            }
-        }
-
     var flServoPos: Double = 0.0
         set(value) {
             if (value != field) {
                 field = value
-                flServo.position = value
+                rightMotor.power = field
             }
         }
 
-    var frServoPos: Double  = 0.0
+    var frServoPos: Double = 0.0
         set(value) {
             if (value != field) {
                 field = value
-                frServo.position = value
+                rightMotor.power = field
             }
         }
 
     fun init(hardwareMap: HardwareMap){
         leftMotor = hardwareMap.get(DcMotor::class.java, "l_motor")
         rightMotor = hardwareMap.get(DcMotor::class.java, "r_motor")
-        flServo = hardwareMap.get(Servo::class.java, "fl_servo")
-        frServo = hardwareMap.get(Servo::class.java, "fr_servo")
-        blServo = hardwareMap.get(Servo::class.java, "bl_servo")
-        brServo = hardwareMap.get(Servo::class.java, "br_servo")
+
+        // TODO add servo here and kill me please
 
         leftMotor.power = 0.0
         rightMotor.power = 0.0
 
-        leftMotor.direction = DcMotorSimple.Direction.FORWARD
-        rightMotor.direction = DcMotorSimple.Direction.REVERSE
+        leftMotor.direction = DcMotorSimple.Direction.REVERSE
+        rightMotor.direction = DcMotorSimple.Direction.FORWARD
 
         leftMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         rightMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER

@@ -10,11 +10,6 @@ class RoverRuckus : OpMode() {
 
     override fun init() {
         hardware.init(hardwareMap)
-
-        hardware.blServoPos = 0.75
-        hardware.brServoPos = 0.25
-        hardware.flServoPos = 0.25
-        hardware.frServoPos = 0.65
     }
 
     override fun loop() {
@@ -31,10 +26,5 @@ class RoverRuckus : OpMode() {
         hardware.rightMotorPower = Range.clip(throttle - brake + horizontalMovement, -1.0, 1.0)
 
         telemetry.addData("Movement:", "Throttle: $throttle | Brake: $brake | Left-Right: $horizontalMovement")
-
-        telemetry.addData("FL position:", hardware.flServoPos)
-        telemetry.addData("FR position:", hardware.frServoPos)
-        telemetry.addData("BL position:", hardware.blServoPos)
-        telemetry.addData("BR position:", hardware.brServoPos)
     }
 }

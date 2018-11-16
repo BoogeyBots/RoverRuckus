@@ -5,8 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
 import com.qualcomm.robotcore.util.Range
+import java.lang.Thread.sleep
 
-@Autonomous(name = "ServoTest", group = "roverruckus")
+@Autonomous(name = "ServoTest", group = "Rover Ruckus")
 class ServoTest : OpMode() {
     private lateinit var blServo: Servo
     private lateinit var brServo: Servo
@@ -28,10 +29,18 @@ class ServoTest : OpMode() {
     }
 
     override fun start() {
-        blServo.position = 1.0
-        brServo.position = 0.0
         flServo.position = 0.0
         frServo.position = 1.0
+        blServo.position = 1.0
+        brServo.position = 0.0
+
+        sleep(1000)
+
+        flServo.position = 0.37
+        frServo.position = 0.6
+
+        blServo.position = 0.6
+        brServo.position = 0.35
     }
 
     override fun loop() {
