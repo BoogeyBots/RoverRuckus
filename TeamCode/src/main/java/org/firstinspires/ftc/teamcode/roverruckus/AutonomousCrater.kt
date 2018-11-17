@@ -144,24 +144,14 @@ class AutonomousCrater : LinearOpMode() {
                 when (goldPos) {
                     0 -> {
                         rotateLeft()
-                        moveForward()
-                        rotateRight()
-                        moveForward()
-                        rotateLeft(time=0.4)
-                        moveBack(0.75)
-                        moveForward(time=2.0)
+                        moveForward(time=6.0)
                     }
                     1 -> {
-                        moveForward(time=10.0)
+                        moveForward(time=6.0)
                     }
                     2 -> {
                         rotateRight()
-                        moveForward()
-                        rotateRight()
-                        moveForward()
-                        moveBack(1.0)
-                        rotateLeft(time=0.3)
-                        moveForward(time=2.0)
+                        moveForward(6.0)
                     }
                 }
             }

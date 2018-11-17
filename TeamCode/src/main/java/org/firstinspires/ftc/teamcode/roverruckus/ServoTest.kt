@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.roverruckus
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Servo
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.util.Range
 import java.lang.Thread.sleep
 
 @Autonomous(name = "ServoTest", group = "Rover Ruckus")
+@Disabled
 class ServoTest : OpMode() {
     private lateinit var blServo: Servo
     private lateinit var brServo: Servo

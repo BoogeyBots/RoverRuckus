@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.roverruckus
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.util.Range
 
 @TeleOp(name = "Motor Test", group = "Rover Ruckus")
+@Disabled
 class MotorTest : OpMode() {
     lateinit var leftMotor: DcMotor
     lateinit var rightMotor: DcMotor

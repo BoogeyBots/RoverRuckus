@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.roverruckus
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.util.ElapsedTime
 
 @Autonomous (name="TelemetryTest", group="Rover Ruckus")
+@Disabled
 class TelemetryTest : OpMode() {
     val elapsedTime: ElapsedTime = ElapsedTime()
 
