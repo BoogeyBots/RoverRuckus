@@ -19,7 +19,7 @@ class RoverRuckus : OpMode() {
         val brake: Double = gamepad1.right_trigger.toDouble()
 
         /** How much does it want move left-right - using the right stick's X axis */
-        val horizontalMovement: Double = -gamepad1.right_stick_x.toDouble()
+        val horizontalMovement: Double = -gamepad1.left_stick_x.toDouble()
 
         // Prevent overflow by clipping the values between +1 and -1
         hardware.leftMotorPower = Range.clip(throttle - brake - horizontalMovement, -1.0, 1.0)

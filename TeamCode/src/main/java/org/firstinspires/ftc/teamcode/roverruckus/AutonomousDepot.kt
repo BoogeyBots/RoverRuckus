@@ -101,30 +101,36 @@ class AutonomousDepot : LinearOpMode() {
                 telemetry.update()
 
                 when (goldPos) {
+                    // left MERGE NU SCHIMBA
                     0 -> {
                         rotateLeft()
-                        moveForward()
-                        rotateRight()
-                        rotateRight()
-                        rotateRight()
-                        rotateRight()
-                        rotateRight()
-                        moveForward()
+                        moveForward(time=2.7)
+                        rotateRight(time=1.4)
+                        moveForward(1.2)
+                        rotateRight(time=1.2)
+                        moveForward(time=1.5)
+                        rotateRight(time=0.4)
+                        moveForward(time=6.0)
                     }
+
+                    // center MERGE NU SCHImBA
                     1 -> {
-                        moveForward()
-                        rotateRight()
-                        rotateRight()
-                        rotateRight()
-                        moveForward()
+                        moveForward(3.25)
+                        rotateRight(time=1.0)
+                        moveForward(0.7)
+                        rotateRight(time=1.4)
+                        moveForward(time=1.5)
+                        rotateRight(time=0.1)
+                        moveForward(time=5.0)
                     }
+                    // right - MERGE NU SCHIMBA NIMIC
                     2 -> {
-                        rotateRight()
-                        moveForward()
-                        rotateRight()
-                        rotateRight()
-                        rotateRight()
-                        moveForward()
+                        rotateRight(time=0.43)
+                        moveForward(time=2.9)
+                        rotateRight(time=1.9)
+                        moveForward(time=2.0)
+                        rotateLeft(time=0.5)
+                        moveForward(3.0)
                     }
                 }
             }
@@ -141,11 +147,11 @@ class AutonomousDepot : LinearOpMode() {
         }
     }
 
-    private fun rotateLeft() {
+    private fun rotateLeft(motorPower: Double = 0.25, time: Double = rotationTime) {
         elapsedTime.reset()
-        while (elapsedTime.seconds() < rotationTime) {
-            hardware.leftMotorPower = -0.25
-            hardware.rightMotorPower = 0.25
+        while (elapsedTime.seconds() < time) {
+            hardware.leftMotorPower = -motorPower
+            hardware.rightMotorPower = motorPower
 
             telemetry.addData("L_MOTOR Power", hardware.leftMotorPower)
             telemetry.addData("R_MOTOR_Power", hardware.rightMotorPower)
@@ -155,11 +161,11 @@ class AutonomousDepot : LinearOpMode() {
         resetMotors()
     }
 
-    private fun rotateRight() {
+    private fun rotateRight(motorPower: Double = 0.34, time: Double = rotationTime) {
         elapsedTime.reset()
-        while (elapsedTime.seconds() < rotationTime) {
-            hardware.leftMotorPower = 0.34
-            hardware.rightMotorPower = -0.34
+        while (elapsedTime.seconds() < time) {
+            hardware.leftMotorPower = motorPower
+            hardware.rightMotorPower = -motorPower
 
             telemetry.addData("L_MOTOR Power", hardware.leftMotorPower)
             telemetry.addData("R_MOTOR_Power", hardware.rightMotorPower)
@@ -169,11 +175,25 @@ class AutonomousDepot : LinearOpMode() {
         resetMotors()
     }
 
-    private fun moveForward() {
+    private fun moveForward(time: Double = 3.0) {
         elapsedTime.reset()
-        while (elapsedTime.seconds() < 3.0) {
+        while (elapsedTime.seconds() < time) {
             hardware.leftMotorPower = 1.0
             hardware.rightMotorPower = 1.0
+
+            telemetry.addData("L_MOTOR Power", hardware.leftMotorPower)
+            telemetry.addData("R_MOTOR_Power", hardware.rightMotorPower)
+            telemetry.update()
+        }
+
+        resetMotors()
+    }
+
+    private fun moveBack(time: Double = 0.5) {
+        elapsedTime.reset()
+        while (elapsedTime.seconds() < time) {
+            hardware.leftMotorPower = -1.0
+            hardware.rightMotorPower = -1.0
 
             telemetry.addData("L_MOTOR Power", hardware.leftMotorPower)
             telemetry.addData("R_MOTOR_Power", hardware.rightMotorPower)
