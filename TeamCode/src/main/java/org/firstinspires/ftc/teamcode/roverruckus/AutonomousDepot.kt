@@ -105,32 +105,32 @@ class AutonomousDepot : LinearOpMode() {
                     0 -> {
                         rotateLeft()
                         moveForward(time=2.7)
-                        rotateRight(time=1.4)
-                        moveForward(1.2)
-                        rotateRight(time=1.2)
+                        /*rotateRight(time=1.5)*/
+                        /*moveForward(1.3)*/
+                        /*rotateRight(time=1.0)
                         moveForward(time=1.5)
                         rotateRight(time=0.4)
-                        moveForward(time=6.0)
+                        moveForward(time=6.0)*/
                     }
 
                     // center MERGE NU SCHImBA
                     1 -> {
                         moveForward(3.25)
-                        rotateRight(time=1.0)
-                        moveForward(0.7)
-                        rotateRight(time=1.4)
+                        /*rotateRight(time=1.0)*/
+                        /*moveForward(0.7)*/
+                        /*rotateRight(time=1.2)
                         moveForward(time=1.5)
                         rotateRight(time=0.1)
-                        moveForward(time=5.0)
+                        moveForward(time=5.0)*/
                     }
                     // right - MERGE NU SCHIMBA NIMIC
                     2 -> {
                         rotateRight(time=0.43)
                         moveForward(time=2.9)
-                        rotateRight(time=1.9)
-                        moveForward(time=2.0)
-                        rotateLeft(time=0.5)
-                        moveForward(3.0)
+                        /*rotateRight(time=2.1)*/
+                        /*moveForward(time=1.9)
+                        rotateLeft(time=0.6)
+                        moveForward(3.5)*/
                     }
                 }
             }

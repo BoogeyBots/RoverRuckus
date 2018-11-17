@@ -147,21 +147,21 @@ class AutonomousCrater : LinearOpMode() {
                         moveForward()
                         rotateRight()
                         moveForward()
-                        rotateRight()
-                        moveForward()
+                        rotateLeft(time=0.4)
+                        moveBack(0.75)
+                        moveForward(time=2.0)
                     }
                     1 -> {
-                        moveForward()
-                        moveForward()
-                        moveForward()
+                        moveForward(time=10.0)
                     }
                     2 -> {
                         rotateRight()
                         moveForward()
-                        rotateLeft()
+                        rotateRight()
                         moveForward()
-                        rotateLeft()
-                        moveForward()
+                        moveBack(1.0)
+                        rotateLeft(time=0.3)
+                        moveForward(time=2.0)
                     }
                 }
             }
@@ -178,11 +178,11 @@ class AutonomousCrater : LinearOpMode() {
         }
     }
 
-    private fun rotateLeft() {
+    private fun rotateLeft(motorPower: Double = 0.25, time: Double = rotationTime) {
         elapsedTime.reset()
-        while (elapsedTime.seconds() < rotationTime) {
-            hardware.leftMotorPower = -0.25
-            hardware.rightMotorPower = 0.25
+        while (elapsedTime.seconds() < time) {
+            hardware.leftMotorPower = -motorPower
+            hardware.rightMotorPower = motorPower
 
             telemetry.addData("L_MOTOR Power", hardware.leftMotorPower)
             telemetry.addData("R_MOTOR_Power", hardware.rightMotorPower)
@@ -192,11 +192,11 @@ class AutonomousCrater : LinearOpMode() {
         resetMotors()
     }
 
-    private fun rotateRight() {
+    private fun rotateRight(motorPower: Double = 0.3, time: Double = rotationTime) {
         elapsedTime.reset()
-        while (elapsedTime.seconds() < rotationTime) {
-            hardware.leftMotorPower = 0.3
-            hardware.rightMotorPower = -0.3
+        while (elapsedTime.seconds() < time) {
+            hardware.leftMotorPower = motorPower
+            hardware.rightMotorPower = -motorPower
 
             telemetry.addData("L_MOTOR Power", hardware.leftMotorPower)
             telemetry.addData("R_MOTOR_Power", hardware.rightMotorPower)
@@ -206,11 +206,25 @@ class AutonomousCrater : LinearOpMode() {
         resetMotors()
     }
 
-    private fun moveForward() {
+    private fun moveForward(time: Double = 2.0) {
         elapsedTime.reset()
-        while (elapsedTime.seconds() < 2.0) {
+        while (elapsedTime.seconds() < time) {
             hardware.leftMotorPower = 1.0
             hardware.rightMotorPower = 1.0
+
+            telemetry.addData("L_MOTOR Power", hardware.leftMotorPower)
+            telemetry.addData("R_MOTOR_Power", hardware.rightMotorPower)
+            telemetry.update()
+        }
+
+        resetMotors()
+    }
+
+    private fun moveBack(time: Double = 0.5) {
+        elapsedTime.reset()
+        while (elapsedTime.seconds() < time) {
+            hardware.leftMotorPower = -1.0
+            hardware.rightMotorPower = -1.0
 
             telemetry.addData("L_MOTOR Power", hardware.leftMotorPower)
             telemetry.addData("R_MOTOR_Power", hardware.rightMotorPower)
