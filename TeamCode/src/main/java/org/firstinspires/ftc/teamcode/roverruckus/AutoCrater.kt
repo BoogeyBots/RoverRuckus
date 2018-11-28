@@ -7,8 +7,48 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 
-@Autonomous(name = "RR - Auto Depot", group = "Rover Ruckus")
-class AutonomousDepot : LinearOpMode() {
+/* Copyright (c) 2018 FIRST. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted (subject to the limitations in the disclaimer below) provided that
+ * the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this list
+ * of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice, this
+ * list of conditions and the following disclaimer in the documentation and/or
+ * other materials provided with the distribution.
+ *
+ * Neither the name of FIRST nor the names of its contributors may be used to endorse or
+ * promote products derived from this software without specific prior written permission.
+ *
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
+ * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+ * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/**
+ * This 2018-2019 OpMode illustrates the basics of using the TensorFlow Object Detection API to
+ * determine the position of the gold and silver minerals.
+ *
+ * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
+ *
+ * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
+ * is explained below.
+ */
+@Autonomous(name = "RR - Auto Crater", group = "Rover Ruckus")
+class AutoCrater : LinearOpMode() {
+
     /**
      * [.vuforia] is the variable we will use to store our instance of the Vuforia
      * localization engine.
@@ -69,24 +109,22 @@ class AutonomousDepot : LinearOpMode() {
                             var silverMineral1X = -1
                             var silverMineral2X = -1
                             for (recognition in updatedRecognitions) {
-                                if (recognition.label == LABEL_GOLD_MINERAL) {
-                                    goldMineralX = recognition.left.toInt()
-                                } else if (silverMineral1X == -1) {
-                                    silverMineral1X = recognition.left.toInt()
-                                } else {
-                                    silverMineral2X = recognition.left.toInt()
+                                when {
+                                    recognition.label == LABEL_GOLD_MINERAL -> goldMineralX = recognition.left.toInt()
+                                    silverMineral1X == -1 -> silverMineral1X = recognition.left.toInt()
+                                    else -> silverMineral2X = recognition.left.toInt()
                                 }
                             }
                             if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
-                                if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
+                                goldPos = if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
                                     telemetry.addData("Gold Mineral Position", "Left")
-                                    goldPos = 0
+                                    0
                                 } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
                                     telemetry.addData("Gold Mineral Position", "Right")
-                                    goldPos = 2
+                                    2
                                 } else {
                                     telemetry.addData("Gold Mineral Position", "Center")
-                                    goldPos = 1
+                                    1
                                 }
                             }
                         }
@@ -100,96 +138,26 @@ class AutonomousDepot : LinearOpMode() {
                 telemetry.addData("R_MOTOR_Power", hardware.rightMotorPower)
                 telemetry.update()
 
-                when (goldPos) {
-                    // left MERGE NU SCHIMBA
-                    0 -> {
-                        rotateLeft()
-                        moveForward(time=2.7)
+                when (goldPos) { // WHEN THE CUBE IS IN THE
+                    0 -> { // LEFT
+                        hardware.rotateLeft(time = 0.5)
+                        hardware.rotateLeft(time = 0.5)
+                        hardware.moveForward(time = 2.5)
                     }
-
-                    // center MERGE NU SCHImBA
-                    1 -> {
-                        moveForward(3.25)
+                    1 -> { // CENTER
+                        hardware.moveForward(time = 2.5)
                     }
-                    // right - MERGE NU SCHIMBA NIMIC
-                    2 -> {
-                        rotateRight(time=0.43)
-                        moveForward(time=2.9)
+                    2 -> { // RIGHT
+                        hardware.rotateRight(time = 0.5)
+                        hardware.moveForward(time = 2.65)
                     }
                 }
             }
 
-
-            while (opModeIsActive()) {
-
-                telemetry.update()
-            }
+            while (opModeIsActive()) { telemetry.update() }
         }
 
-        if (tfod != null) {
-            tfod!!.shutdown()
-        }
-    }
-
-    private fun rotateLeft(motorPower: Double = 0.25, time: Double = rotationTime) {
-        elapsedTime.reset()
-        while (elapsedTime.seconds() < time) {
-            hardware.leftMotorPower = -motorPower
-            hardware.rightMotorPower = motorPower
-
-            telemetry.addData("L_MOTOR Power", hardware.leftMotorPower)
-            telemetry.addData("R_MOTOR_Power", hardware.rightMotorPower)
-            telemetry.update()
-        }
-
-        resetMotors()
-    }
-
-    private fun rotateRight(motorPower: Double = 0.34, time: Double = rotationTime) {
-        elapsedTime.reset()
-        while (elapsedTime.seconds() < time) {
-            hardware.leftMotorPower = motorPower
-            hardware.rightMotorPower = -motorPower
-
-            telemetry.addData("L_MOTOR Power", hardware.leftMotorPower)
-            telemetry.addData("R_MOTOR_Power", hardware.rightMotorPower)
-            telemetry.update()
-        }
-
-        resetMotors()
-    }
-
-    private fun moveForward(time: Double = 3.0) {
-        elapsedTime.reset()
-        while (elapsedTime.seconds() < time) {
-            hardware.leftMotorPower = 1.0
-            hardware.rightMotorPower = 1.0
-
-            telemetry.addData("L_MOTOR Power", hardware.leftMotorPower)
-            telemetry.addData("R_MOTOR_Power", hardware.rightMotorPower)
-            telemetry.update()
-        }
-
-        resetMotors()
-    }
-
-    private fun moveBack(time: Double = 0.5) {
-        elapsedTime.reset()
-        while (elapsedTime.seconds() < time) {
-            hardware.leftMotorPower = -1.0
-            hardware.rightMotorPower = -1.0
-
-            telemetry.addData("L_MOTOR Power", hardware.leftMotorPower)
-            telemetry.addData("R_MOTOR_Power", hardware.rightMotorPower)
-            telemetry.update()
-        }
-
-        resetMotors()
-    }
-
-    private fun resetMotors() {
-        hardware.leftMotorPower = 0.0
-        hardware.rightMotorPower = 0.0
+        if (tfod != null) { tfod!!.shutdown() }
     }
 
     /**
