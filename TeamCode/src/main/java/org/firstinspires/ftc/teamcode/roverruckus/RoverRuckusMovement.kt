@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.util.ElapsedTime
 
 private val elapsedTime = ElapsedTime()
 
-fun RoverRuckusHardware.moveForward(time: Double, motorPower: Double = 1.0) {
+fun RoverRuckusHardware.moveForward(time: Double, motorPower: Double = 0.95) {
     elapsedTime.reset()
 
     while (elapsedTime.seconds() < time) {
@@ -22,21 +22,21 @@ fun RoverRuckusHardware.moveBack(time: Double, motorPower: Double = 1.0) {
     }
 }
 
-fun RoverRuckusHardware.rotateLeft(time: Double, motorPower: Double = 0.25) {
+fun RoverRuckusHardware.rotateLeft(laps: Double = 1.0) {
     elapsedTime.reset()
 
-    while (elapsedTime.seconds() < time) {
-        this.leftMotorPower  = -motorPower
-        this.rightMotorPower = motorPower
+    while (elapsedTime.seconds() < 3.35 * laps) {
+        this.leftMotorPower  = -0.95
+        this.rightMotorPower = 0.95
     }
 }
 
-fun RoverRuckusHardware.rotateRight(time: Double, motorPower: Double = 0.3) {
+fun RoverRuckusHardware.rotateRight(laps: Double = 1.0) {
     elapsedTime.reset()
 
-    while (elapsedTime.seconds() < time) {
-        this.leftMotorPower  = motorPower
-        this.rightMotorPower = -motorPower
+    while (elapsedTime.seconds() < 3.35 * laps) {
+        this.leftMotorPower  = 0.95
+        this.rightMotorPower = -0.95
     }
 }
 

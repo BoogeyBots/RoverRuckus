@@ -100,14 +100,14 @@ class AutoDepot : LinearOpMode() {
 
                 when (goldPos) {
                     0 -> { // LEFT
-                        hardware.rotateLeft(time = 0.5)
+                        hardware.rotateLeft(0.3)
                         hardware.moveForward(time = 2.7)
                     }
                     1 -> { // CENTER
                         hardware.moveForward(time = 3.25)
                     }
                     2 -> { // RIGHT
-                        hardware.rotateRight(time = 0.43)
+                        hardware.rotateRight(0.3)
                         hardware.moveForward(time = 2.9)
                     }
                 }
