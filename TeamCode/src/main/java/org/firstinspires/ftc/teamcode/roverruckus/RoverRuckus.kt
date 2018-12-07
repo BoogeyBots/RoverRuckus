@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.Range
 import com.sun.tools.javac.util.Convert
+import kotlin.math.min
 
 @TeleOp(name = "ROBOT", group = "Rover Ruckus")
 class RoverRuckus : OpMode() {
@@ -11,18 +12,23 @@ class RoverRuckus : OpMode() {
 
     private var scoopOffset = 0.0
     private var hookOffset = 0.0
-    private var hookSpeed = 0.01
-    private var lockSpeed = 0.01
+    private val hookSpeed = 0.01
+    private val lockSpeed = 0.01
     private var lockOffset = 0.0
     private var leftIntakeOffset = 0.0
     private var rightIntakeOffset = 0.0
-    private var intakeSpeed = 0.01
+    private val intakeSpeed = 0.01
+    private val minSpeed = 0.3
+    private val maxSpeed = 0.65
+    private var currentSpeed = 0.65
 
     override fun init() {
         hardware.init(hardwareMap)
     }
 
     override fun loop() {
+        ///=== MOVEMENT ===========
+
         /** How much does it want to move forward - using LT */
         val throttle: Double = gamepad1.left_trigger.toDouble()
         /** How much does it want to move forward - using LT */
@@ -33,15 +39,26 @@ class RoverRuckus : OpMode() {
 
 
         // Prevent overflow by clipping the values between +1 and -1
-        hardware.leftMotorPower = Range.clip(throttle - brake - horizontalMovement, -0.75, 0.75)
-        hardware.rightMotorPower = Range.clip(throttle - brake + horizontalMovement, -0.75, 0.75)
+        hardware.leftMotorPower = Range.clip(throttle - brake - horizontalMovement, -currentSpeed, currentSpeed)
+        hardware.rightMotorPower = Range.clip(throttle - brake + horizontalMovement, -currentSpeed, currentSpeed)
+        ///======================
 
-        ///=== LOCK ===
+        ///=== SPEED SETTINGS ===
+        if (gamepad1.dpad_up) {
+            currentSpeed = Range.clip(currentSpeed + 0.01, minSpeed, maxSpeed)
+        }
+        if (gamepad1.dpad_down) {
+            currentSpeed = Range.clip(currentSpeed - 0.01, minSpeed, maxSpeed)
+        }
+        ///=======================
 
+
+        ///=== LOCK ==============
         lockOffset += ((if (gamepad1.y) lockSpeed else 0.0) - (if (gamepad1.a) lockSpeed else 0.0))
         lockOffset = Range.clip(lockOffset, -0.5, 0.0)
 
         hardware.lockServoPos = Range.clip(0.5 + lockOffset, 0.0, 1.0)
+        ///======================
 
         ///======================
         ///==== CONTROLLER 2 ====
@@ -49,8 +66,8 @@ class RoverRuckus : OpMode() {
 
         val armMovement: Double = -gamepad2.left_stick_y.toDouble()
 
-        hardware.leftArmPower = Range.clip(armMovement, -0.7, 0.7)
-        hardware.rightArmPower = Range.clip(armMovement, -0.7, 0.7)
+        hardware.leftArmPower = Range.clip(armMovement, -0.6, 0.6)
+        hardware.rightArmPower = Range.clip(armMovement, -0.6, 0.6)
 
         ///=== SCOOP ===
 
@@ -78,5 +95,7 @@ class RoverRuckus : OpMode() {
 
         telemetry.addData("MOVEMENT:", "Throttle: $throttle | Brake: $brake | Left-Right: $horizontalMovement")
         telemetry.addData("ARM:", "Movement: $armMovement")
+        telemetry.addData("Current speed", currentSpeed)
+        telemetry.addData("Hook pos", hardware.hookServoPos)
     }
 }
