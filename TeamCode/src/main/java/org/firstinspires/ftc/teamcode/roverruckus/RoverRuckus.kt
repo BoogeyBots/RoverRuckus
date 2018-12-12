@@ -78,15 +78,15 @@ class RoverRuckus : OpMode() {
 
         ///=== HOOK ===
 
-        hookOffset += ((if (gamepad2.x) hookSpeed else 0.0) - (if (gamepad2.b) hookSpeed else 0.0))
+        hookOffset += ((if (gamepad2.left_bumper) hookSpeed else 0.0) - (if (gamepad2.right_bumper) hookSpeed else 0.0))
         hookOffset = Range.clip(hookOffset, 0.0, 0.5)
 
         hardware.hookServoPos = Range.clip(hookOffset, 0.0, 1.0)
 
         ///=== INTAKE ==
 
-        leftIntakeOffset += (if (gamepad2.dpad_up) intakeSpeed else 0.0) - (if (gamepad2.dpad_down) intakeSpeed else 0.0)
-        rightIntakeOffset += -(if (gamepad2.dpad_up) intakeSpeed else 0.0) + (if (gamepad2.dpad_down) intakeSpeed else 0.0)
+        leftIntakeOffset += (-gamepad2.right_stick_y) * intakeSpeed
+        rightIntakeOffset += gamepad2.right_stick_y * intakeSpeed
         leftIntakeOffset = Range.clip(leftIntakeOffset, -0.5, 0.0)
         rightIntakeOffset = Range.clip(rightIntakeOffset, 0.0, 0.5)
 
