@@ -9,12 +9,13 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.Gyroscope
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
+import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.navigation.*
 import org.firstinspires.ftc.robotcore.internal.android.dex.util.Unsigned
 import java.util.*
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
-
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 
 
 @Autonomous(name = "Dezgatare", group = "Rover Ruckus")
@@ -29,6 +30,14 @@ class AutoDepot : LinearOpMode() {
 
     var lastAngles: Orientation = Orientation()
     var globalAngle: Double = 0.0
+
+    private val TFOD_MODEL_ASSET = "RoverRuckus.tflite"
+    private val LABEL_GOLD_MINERAL = "Gold Mineral"
+    private val LABEL_SILVER_MINERAL = "Silver Mineral"
+
+    private val VUFORIA_KEY = "AWo7bzb/////AAABmcbdWZ79Y049lfMcsRS8waNYev8AbC1EwUWqhJnr1poItrv7+etQ1bwW4BiQpg151evO66Pzt3L2LvfbBgzn4aQ3QzVBXYQBjqMScjg/gQEj0g3ldi/0ENHSKwnT48YDxtQQb5/twpwjew9wlaSkZuZ8KtZGwOZHh7vhV0xQmjh1akuPF0zmKvCn5HPnd/O9YxXR5Ef7eyQ+r15XMT7Vd7kG/PUbpCvkexwsRZ4BKGv+oV1ZWOqrYrP5WKbpzHmEOl8RggfJKD707G2Q61vTUW+MEksQwrydbwTCqzTxDUTWdOlgzG9JfGjS+jUdQ3CAN+EETNZDOQs8fIxn3Q+Bdmi823AJLEU3GDhptc7KHcjo"
+    private var vuforia: VuforiaLocalizer? = null
+    private var tfod: TFObjectDetector? = null
 
     override fun runOpMode() {
         hardware.init(hardwareMap)
@@ -50,6 +59,9 @@ class AutoDepot : LinearOpMode() {
 
         imu = hardwareMap.get(BNO055IMU::class.java, "imu")
         imu.initialize(imuParams)
+
+        telemetry.addData("INIT", "over!")
+        telemetry.update()
 
         waitForStart()
 
@@ -78,7 +90,7 @@ class AutoDepot : LinearOpMode() {
         elapsedTime.reset()
 
         // === MA IMPING IN LANDER
-        while (elapsedTime.seconds() < 0.4) {
+        while (elapsedTime.seconds() < 0.4 && opModeIsActive()) {
             hardware.leftArmPower = -0.3
             hardware.rightArmPower = -0.3
         }
@@ -88,14 +100,41 @@ class AutoDepot : LinearOpMode() {
 
         elapsedTime.reset()
 
-        while (elapsedTime.seconds() < 0.5 && opModeIsActive()) {
-            // WAIT 0.5 sec
+        while (elapsedTime.seconds() < 0.75 && opModeIsActive()) {
+            // WAIT 0.75 secs
         }
 
+        elapsedTime.reset()
+
+        // MERG SPRE LANDER CA SA FIE HOOKU MAI SUS
+        while (elapsedTime.seconds() < 0.1 && opModeIsActive()) {
+            hardware.leftMotorPower = 0.4
+            hardware.rightMotorPower = 0.4
+        }
+
+        hardware.leftMotorPower = 0.0
+        hardware.rightMotorPower = 0.0
+
+        elapsedTime.reset()
+
+        while (elapsedTime.seconds() < 1.0 && opModeIsActive()) {
+            hardware.lockServoPos = Range.clip(hardware.lockServoPos + 0.05, 0.0, 0.5)
+        }
+
+        elapsedTime.reset()
+
+        while (elapsedTime.seconds() < 0.5 && opModeIsActive()) {
+            // WAIT 0.5 secs
+        }
+
+        elapsedTime.reset()
         // === SCOT HOOK
         while (elapsedTime.seconds() < 1.0 && opModeIsActive()) {
             hardware.hookServoPos = Range.clip(hardware.hookServoPos - 0.05, 0.0, 0.5)
         }
+
+        // ROTATE 180 DEGREES
+        rotate(-165.0, 0.34)
 
         elapsedTime.reset()
 
@@ -108,29 +147,150 @@ class AutoDepot : LinearOpMode() {
         hardware.leftArmPower = 0.0
         hardware.rightArmPower = 0.0
 
-        // ROTATE 180 DEGREES
-        rotate(-165.0, 0.34)
+        elapsedTime.reset()
+
+        // MERG IN FATA CA SA VAD DOAR UN MINERAL LA UN MOMENT DAT
+        while (elapsedTime.seconds() < 0.25 && opModeIsActive()) {
+            hardware.leftMotorPower = 0.35
+            hardware.rightMotorPower = 0.35
+        }
+
+        hardware.leftMotorPower = 0.0
+        hardware.rightMotorPower = 0.0
 
         elapsedTime.reset()
-        while (elapsedTime.seconds() < 2.0 && opModeIsActive()) {
-            telemetry.update()
+
+        while (elapsedTime.seconds() < 0.5 && opModeIsActive()) {
+            // WAIT 0.5 secs
         }
 
-        var goldPos: String = "NOT FOUND"
+        initVuforia()
 
-        // TODO detect cube
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            initTfod()
+        } else {
+            telemetry.addData("Sorry!", "This device is not compatible with TFOD")
+        }
+
+        rotate(30.0, 0.34)
+
+        var goldPos = 1
+
+        if (opModeIsActive()) {
+            /** Activate Tensor Flow Object Detection.  */
+            if (tfod != null) {
+                tfod?.activate()
+            }
+
+            elapsedTime.reset()
+
+            var foundGold = false
+            while (opModeIsActive() && !foundGold) {
+                if (tfod != null) {
+                    // getUpdatedRecognitions() will return null if no new information is available since
+                    // the last time that call was made.
+                    val updatedRecognitions = tfod?.getUpdatedRecognitions()
+                    if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size)
+                        if (updatedRecognitions.size > 0) {
+                            for (recognition in updatedRecognitions) {
+                                if (recognition.label == LABEL_GOLD_MINERAL) {
+                                    foundGold = true
+                                } else {
+                                    if (elapsedTime.seconds() > 0.5) {
+                                        rotate(-30.0, 0.34)
+                                        elapsedTime.reset()
+                                        goldPos++
+                                    }
+                                }
+                            }
+                        }
+                        telemetry.update()
+                    }
+                }
+            }
+        }
+
+        if (tfod != null) {
+            tfod?.shutdown()
+        }
+
+        elapsedTime.reset()
 
         when (goldPos) {
-            "LEFT" -> {
-
+            1 -> {
+                while (elapsedTime.seconds() < 1.75 && opModeIsActive()) {
+                    val rotation = imu
+                            .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
+                            .firstAngle
+                            .toDouble()
+                    when {
+                        rotation > -140.0 -> {
+                            hardware.leftMotorPower = 0.55
+                            hardware.rightMotorPower = 0.35
+                        }
+                        rotation < -150.0 -> {
+                            hardware.leftMotorPower = 0.35
+                            hardware.rightMotorPower = 0.55
+                        }
+                        else -> {
+                            hardware.leftMotorPower = 0.4
+                            hardware.rightMotorPower = 0.4
+                        }
+                    }
+                    telemetry.update()
+                }
             }
-            "CENTER" -> {
-
+            2 -> {
+                while (elapsedTime.seconds() < 1.75 && opModeIsActive()) {
+                    val rotation = imu
+                            .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
+                            .firstAngle
+                            .toDouble()
+                    when {
+                        rotation < 0 && rotation > -175.0 -> {
+                            hardware.leftMotorPower = 0.55
+                            hardware.rightMotorPower = 0.35
+                        }
+                        rotation > 0 && rotation < 175.0 -> {
+                            hardware.leftMotorPower = 0.35
+                            hardware.rightMotorPower = 0.55
+                        }
+                        else -> {
+                            hardware.leftMotorPower = 0.4
+                            hardware.rightMotorPower = 0.4
+                        }
+                    }
+                    telemetry.update()
+                }
             }
-            "RIGHT" -> {
-
+            3 -> {
+                while (elapsedTime.seconds() < 1.75 && opModeIsActive()) {
+                    val rotation = imu
+                            .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
+                            .firstAngle
+                            .toDouble()
+                    when {
+                        rotation > 150.0 -> {
+                            hardware.leftMotorPower = 0.55
+                            hardware.rightMotorPower = 0.35
+                        }
+                        rotation < 140.0 -> {
+                            hardware.leftMotorPower = 0.35
+                            hardware.rightMotorPower = 0.55
+                        }
+                        else -> {
+                            hardware.leftMotorPower = 0.4
+                            hardware.rightMotorPower = 0.4
+                        }
+                    }
+                    telemetry.update()
+                }
             }
         }
+
+        hardware.leftMotorPower = 0.0
+        hardware.rightMotorPower = 0.0
     }
 
     fun rotateOld() {
@@ -257,5 +417,31 @@ class AutoDepot : LinearOpMode() {
 
     internal fun formatDegrees(degrees: Double): String {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees))
+    }
+
+    private fun initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        val parameters = VuforiaLocalizer.Parameters()
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters)
+
+        // Loading trackables is not necessary for the Tensor Flow Object Detection engine.
+    }
+
+    /**
+     * Initialize the Tensor Flow Object Detection engine.
+     */
+    private fun initTfod() {
+        val tfodMonitorViewId = hardwareMap.appContext.resources.getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.packageName)
+        val tfodParameters = TFObjectDetector.Parameters(tfodMonitorViewId)
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia)
+        tfod?.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL)
     }
 }
