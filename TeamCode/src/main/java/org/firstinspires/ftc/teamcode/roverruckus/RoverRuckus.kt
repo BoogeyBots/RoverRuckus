@@ -1,10 +1,17 @@
 package org.firstinspires.ftc.teamcode.roverruckus
 
+import android.support.annotation.RawRes
+import com.qualcomm.ftccommon.SoundPlayer
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.util.Range
+import com.sun.tools.javac.util.Context
 import com.sun.tools.javac.util.Convert
+import org.firstinspires.ftc.teamcode.R
 import kotlin.math.min
+import android.media.MediaPlayer
+
+
 
 @TeleOp(name = "ROBOT", group = "Rover Ruckus")
 class RoverRuckus : OpMode() {
@@ -12,7 +19,7 @@ class RoverRuckus : OpMode() {
 
     private var scoopOffset = 0.0
     private var hookOffset = 0.0
-    private val hookSpeed = 0.01
+    private val hookSpeed = 0.02
     private val lockSpeed = 0.01
     private var lockOffset = 0.0
     private var leftIntakeOffset = 0.0
@@ -22,8 +29,13 @@ class RoverRuckus : OpMode() {
     private val maxSpeed = 0.65
     private var currentSpeed = 0.65
 
+    private lateinit var mediaPlayer: MediaPlayer
+
     override fun init() {
         hardware.init(hardwareMap)
+
+        mediaPlayer = MediaPlayer.create(hardwareMap.appContext, R.raw.bonjovi)
+        mediaPlayer.start()
     }
 
     override fun loop() {
@@ -81,7 +93,7 @@ class RoverRuckus : OpMode() {
         hookOffset += ((if (gamepad2.left_bumper) hookSpeed else 0.0) - (if (gamepad2.right_bumper) hookSpeed else 0.0))
         hookOffset = Range.clip(hookOffset, 0.0, 0.5)
 
-        hardware.hookServoPos = Range.clip(hookOffset, 0.0, 1.0)
+        hardware.hookServoPos = Range.clip(0.5 + hookOffset, 0.5, 1.0)
 
         ///=== INTAKE ==
 
@@ -90,12 +102,19 @@ class RoverRuckus : OpMode() {
         leftIntakeOffset = Range.clip(leftIntakeOffset, -0.5, 0.0)
         rightIntakeOffset = Range.clip(rightIntakeOffset, 0.0, 0.5)
 
-        hardware.leftIntakeServoPos = Range.clip(0.5 + leftIntakeOffset,0.0,1.0)
-        hardware.rightIntakeServoPos = Range.clip(0.5 + rightIntakeOffset, 0.0,1.0)
+        hardware.leftIntakeServoPos = Range.clip(0.5 + leftIntakeOffset, 0.0,0.38)
+        hardware.rightIntakeServoPos = Range.clip(0.5 + rightIntakeOffset, 0.62,1.0)
 
         telemetry.addData("MOVEMENT:", "Throttle: $throttle | Brake: $brake | Left-Right: $horizontalMovement")
         telemetry.addData("ARM:", "Movement: $armMovement")
         telemetry.addData("Current speed", currentSpeed)
         telemetry.addData("Hook pos", hardware.hookServoPos)
+        telemetry.addData("Hook", hardware.hookServoPos)
+        telemetry.addData("Intake", "L: ${hardware.leftIntakeServoPos}; R: ${hardware.rightIntakeServoPos}")
+        telemetry.addData("Scoop", hardware.scoopServoPos)
+    }
+
+    override fun stop() {
+        mediaPlayer.stop()
     }
 }

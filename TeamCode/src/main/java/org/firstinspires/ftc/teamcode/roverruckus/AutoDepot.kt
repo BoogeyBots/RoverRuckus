@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.roverruckus
 
+import android.media.MediaPlayer
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.bosch.BNO055IMUImpl
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator
@@ -16,6 +17,7 @@ import java.util.*
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
+import org.firstinspires.ftc.teamcode.R
 
 
 @Autonomous(name = "Dezgatare", group = "Rover Ruckus")
@@ -39,6 +41,10 @@ class AutoDepot : LinearOpMode() {
     private var vuforia: VuforiaLocalizer? = null
     private var tfod: TFObjectDetector? = null
 
+
+    private lateinit var mediaPlayer: MediaPlayer
+
+    @Throws(InterruptedException::class)
     override fun runOpMode() {
         hardware.init(hardwareMap)
 
@@ -59,6 +65,10 @@ class AutoDepot : LinearOpMode() {
 
         imu = hardwareMap.get(BNO055IMU::class.java, "imu")
         imu.initialize(imuParams)
+
+        mediaPlayer = MediaPlayer.create(hardwareMap.appContext, R.raw.bonjovi)
+        mediaPlayer.setVolume(1.0f, 1.0f)
+        mediaPlayer.start()
 
         telemetry.addData("INIT", "over!")
         telemetry.update()
@@ -90,7 +100,7 @@ class AutoDepot : LinearOpMode() {
         elapsedTime.reset()
 
         // === MA IMPING IN LANDER
-        while (elapsedTime.seconds() < 0.4 && opModeIsActive()) {
+        while (elapsedTime.seconds() < 0.7 && opModeIsActive()) {
             hardware.leftArmPower = -0.3
             hardware.rightArmPower = -0.3
         }
@@ -130,7 +140,7 @@ class AutoDepot : LinearOpMode() {
         elapsedTime.reset()
         // === SCOT HOOK
         while (elapsedTime.seconds() < 1.0 && opModeIsActive()) {
-            hardware.hookServoPos = Range.clip(hardware.hookServoPos - 0.05, 0.0, 0.5)
+            hardware.hookServoPos = Range.clip(hardware.hookServoPos + 0.05, 0.5, 1.0)
         }
 
         // ROTATE 180 DEGREES
@@ -139,24 +149,13 @@ class AutoDepot : LinearOpMode() {
         elapsedTime.reset()
 
         // === COBOR BRAT
-        while (elapsedTime.seconds() < 1.0 && opModeIsActive()) {
-            hardware.leftArmPower = 0.2
-            hardware.rightArmPower = 0.2
+        while (elapsedTime.seconds() < 0.3 && opModeIsActive()) {
+            hardware.leftArmPower = -0.2
+            hardware.rightArmPower = -0.2
         }
 
         hardware.leftArmPower = 0.0
         hardware.rightArmPower = 0.0
-
-        elapsedTime.reset()
-
-        // MERG IN FATA CA SA VAD DOAR UN MINERAL LA UN MOMENT DAT
-        while (elapsedTime.seconds() < 0.25 && opModeIsActive()) {
-            hardware.leftMotorPower = 0.35
-            hardware.rightMotorPower = 0.35
-        }
-
-        hardware.leftMotorPower = 0.0
-        hardware.rightMotorPower = 0.0
 
         elapsedTime.reset()
 
@@ -172,7 +171,17 @@ class AutoDepot : LinearOpMode() {
             telemetry.addData("Sorry!", "This device is not compatible with TFOD")
         }
 
-        rotate(30.0, 0.34)
+        elapsedTime.reset()
+        while (elapsedTime.seconds() < 0.2 && opModeIsActive()) {
+            hardware.leftMotorPower = 0.3
+            hardware.rightMotorPower = 0.3
+        }
+
+        hardware.leftMotorPower = 0.0
+        hardware.rightMotorPower = 0.0
+
+
+        rotate(25.0, 0.34)
 
         var goldPos = 1
 
@@ -219,7 +228,7 @@ class AutoDepot : LinearOpMode() {
 
         when (goldPos) {
             1 -> {
-                while (elapsedTime.seconds() < 1.75 && opModeIsActive()) {
+                while (elapsedTime.seconds() < 0.9 && opModeIsActive()) {
                     val rotation = imu
                             .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
                             .firstAngle
@@ -242,7 +251,7 @@ class AutoDepot : LinearOpMode() {
                 }
             }
             2 -> {
-                while (elapsedTime.seconds() < 1.75 && opModeIsActive()) {
+                while (elapsedTime.seconds() < 1.4 && opModeIsActive()) {
                     val rotation = imu
                             .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
                             .firstAngle
@@ -265,7 +274,7 @@ class AutoDepot : LinearOpMode() {
                 }
             }
             3 -> {
-                while (elapsedTime.seconds() < 1.75 && opModeIsActive()) {
+                while (elapsedTime.seconds() < 0.9 && opModeIsActive()) {
                     val rotation = imu
                             .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
                             .firstAngle
@@ -289,30 +298,47 @@ class AutoDepot : LinearOpMode() {
             }
         }
 
-        hardware.leftMotorPower = 0.0
-        hardware.rightMotorPower = 0.0
-    }
-
-    fun rotateOld() {
-        val rotation = imu
-                .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                .firstAngle
-                .toDouble()
-
-        do {
-            hardware.leftMotorPower = 0.35
-            hardware.rightMotorPower = -0.35
-
-            val rotation = imu
-                    .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                    .firstAngle
-                    .toDouble()
-
-            telemetry.update()
-        } while ((rotation > -170.0 || rotation < 170.0) && opModeIsActive())
 
         hardware.leftMotorPower = 0.0
         hardware.rightMotorPower = 0.0
+
+        elapsedTime.reset()
+        while (elapsedTime.seconds() < 0.5 && opModeIsActive()) {
+            // WAIT 0.5 secs
+        }
+
+        elapsedTime.reset()
+        while (elapsedTime.seconds() < 0.5 && opModeIsActive()) {
+            hardware.leftIntakeServoPos = 0.32
+            hardware.rightIntakeServoPos = 0.68
+        }
+
+        // ===================================
+        // ====== GOING INTO THE CRATER ======
+        // ===================================
+
+
+        when (goldPos) {
+            3 -> {
+                rotate(degrees = -80.0, power = 0.34)
+                elapsedTime.reset()
+                moveForwardOnAngle(45.0, 4.0)
+            }
+            2 -> {
+                rotate(degrees = -110.0, power = 0.34)
+                elapsedTime.reset()
+                moveForwardOnAngle(45.0, 4.0)
+            }
+            1-> {
+                rotate(degrees = 80.0, power = 0.34)
+                elapsedTime.reset()
+                moveForwardOnAngle(-45.0, 4.0)
+            }
+        }
+
+        if (isStopRequested) {
+            mediaPlayer.stop()
+        }
     }
 
     private fun resetAngle() {
@@ -376,6 +402,29 @@ class AutoDepot : LinearOpMode() {
         resetAngle()
     }
 
+    fun moveForwardOnAngle(angle: Double, time: Double) {
+        while (elapsedTime.seconds() < time && opModeIsActive()) {
+            val rotation = imu
+                    .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
+                    .firstAngle
+                    .toDouble()
+            when {
+                rotation > angle + 5.0 -> {
+                    hardware.leftMotorPower = 0.55
+                    hardware.rightMotorPower = 0.35
+                }
+                rotation < angle - 5.0 -> {
+                    hardware.leftMotorPower = 0.35
+                    hardware.rightMotorPower = 0.55
+                }
+                else -> {
+                    hardware.leftMotorPower = 0.4
+                    hardware.rightMotorPower = 0.4
+                }
+            }
+            telemetry.update()
+        }
+    }
 
     internal fun composeTelemetry() {
 
