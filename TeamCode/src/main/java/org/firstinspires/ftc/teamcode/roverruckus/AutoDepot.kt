@@ -2,22 +2,18 @@ package org.firstinspires.ftc.teamcode.roverruckus
 
 import android.media.MediaPlayer
 import com.qualcomm.hardware.bosch.BNO055IMU
-import com.qualcomm.hardware.bosch.BNO055IMUImpl
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp
-import com.qualcomm.robotcore.hardware.Gyroscope
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
+import com.vuforia.CameraDevice
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.navigation.*
-import org.firstinspires.ftc.robotcore.internal.android.dex.util.Unsigned
 import java.util.*
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
-import org.firstinspires.ftc.teamcode.R
 
 
 @Autonomous(name = "Dezgatare", group = "Rover Ruckus")
@@ -50,8 +46,8 @@ class AutoDepot : LinearOpMode() {
 
         hardware.lockServoPos = 0.5
         hardware.hookServoPos = 0.5
-        hardware.leftIntakeServoPos = 0.0
-        hardware.rightIntakeServoPos = 1.00
+        hardware.leftIntakeServoPos = 0.1
+        hardware.rightIntakeServoPos = 0.9
         hardware.scoopServoPos = 1.0
         telemetry.addData("Servo intake", "L: ${hardware.leftIntakeServoPos}, R: ${hardware.rightIntakeServoPos}")
 
@@ -66,9 +62,9 @@ class AutoDepot : LinearOpMode() {
         imu = hardwareMap.get(BNO055IMU::class.java, "imu")
         imu.initialize(imuParams)
 
-        mediaPlayer = MediaPlayer.create(hardwareMap.appContext, R.raw.bonjovi)
-        mediaPlayer.setVolume(1.0f, 1.0f)
-        mediaPlayer.start()
+//        mediaPlayer = MediaPlayer.create(hardwareMap.appContext, R.raw.bonjovi)
+//        mediaPlayer.setVolume(1.0f, 1.0f)
+//        mediaPlayer.start()
 
         telemetry.addData("INIT", "over!")
         telemetry.update()
@@ -79,89 +75,26 @@ class AutoDepot : LinearOpMode() {
 
         composeTelemetry()
 
-        elapsedTime.reset()
+        liftLock()
 
-        // === RIDIC IN SUS SI SCOT LOCK
-        while (elapsedTime.seconds() < 0.28 && opModeIsActive()) {
-            hardware.leftArmPower = 0.6
-            hardware.rightArmPower = 0.6
+        dropDown()
 
-            hardware.lockServoPos = Range.clip(hardware.lockServoPos - 0.05, 0.0, 0.5)
-        }
+        pushLander()
 
-        elapsedTime.reset()
+        waitForSeconds(0.5)
 
-        // === LAS USOR IN JOS
-        while (elapsedTime.seconds() < 2.8 && opModeIsActive()) {
-            hardware.leftArmPower = 0.08
-            hardware.rightArmPower = 0.08
-        }
+        goTowardsLanderToLiftHook()
 
-        elapsedTime.reset()
+        moveLock()
 
-        // === MA IMPING IN LANDER
-        while (elapsedTime.seconds() < 0.7 && opModeIsActive()) {
-            hardware.leftArmPower = -0.3
-            hardware.rightArmPower = -0.3
-        }
+        waitForSeconds(0.5)
 
-        hardware.leftArmPower = 0.0
-        hardware.rightArmPower = 0.0
-
-        elapsedTime.reset()
-
-        while (elapsedTime.seconds() < 0.75 && opModeIsActive()) {
-            // WAIT 0.75 secs
-        }
-
-        elapsedTime.reset()
-
-        // MERG SPRE LANDER CA SA FIE HOOKU MAI SUS
-        while (elapsedTime.seconds() < 0.1 && opModeIsActive()) {
-            hardware.leftMotorPower = 0.4
-            hardware.rightMotorPower = 0.4
-        }
-
-        hardware.leftMotorPower = 0.0
-        hardware.rightMotorPower = 0.0
-
-        elapsedTime.reset()
-
-        while (elapsedTime.seconds() < 1.0 && opModeIsActive()) {
-            hardware.lockServoPos = Range.clip(hardware.lockServoPos + 0.05, 0.0, 0.5)
-        }
-
-        elapsedTime.reset()
-
-        while (elapsedTime.seconds() < 0.5 && opModeIsActive()) {
-            // WAIT 0.5 secs
-        }
-
-        elapsedTime.reset()
-        // === SCOT HOOK
-        while (elapsedTime.seconds() < 1.0 && opModeIsActive()) {
-            hardware.hookServoPos = Range.clip(hardware.hookServoPos + 0.05, 0.5, 1.0)
-        }
+        detachHook()
 
         // ROTATE 180 DEGREES
         rotate(-165.0, 0.34)
 
-        elapsedTime.reset()
-
-        // === COBOR BRAT
-        while (elapsedTime.seconds() < 0.3 && opModeIsActive()) {
-            hardware.leftArmPower = -0.2
-            hardware.rightArmPower = -0.2
-        }
-
-        hardware.leftArmPower = 0.0
-        hardware.rightArmPower = 0.0
-
-        elapsedTime.reset()
-
-        while (elapsedTime.seconds() < 0.5 && opModeIsActive()) {
-            // WAIT 0.5 secs
-        }
+        waitForSeconds(0.25)
 
         initVuforia()
 
@@ -171,19 +104,11 @@ class AutoDepot : LinearOpMode() {
             telemetry.addData("Sorry!", "This device is not compatible with TFOD")
         }
 
-        elapsedTime.reset()
-        while (elapsedTime.seconds() < 0.2 && opModeIsActive()) {
-            hardware.leftMotorPower = 0.3
-            hardware.rightMotorPower = 0.3
-        }
 
-        hardware.leftMotorPower = 0.0
-        hardware.rightMotorPower = 0.0
-
-
-        rotate(25.0, 0.34)
+        goForward(time=0.2, power=0.3)
 
         var goldPos = 1
+        var k = 1
 
         if (opModeIsActive()) {
             /** Activate Tensor Flow Object Detection.  */
@@ -198,18 +123,29 @@ class AutoDepot : LinearOpMode() {
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
-                    val updatedRecognitions = tfod?.getUpdatedRecognitions()
+                    val updatedRecognitions = tfod?.updatedRecognitions
                     if (updatedRecognitions != null) {
-                        telemetry.addData("# Object Detected", updatedRecognitions.size)
+                        telemetry.addData("# Objects Detected", updatedRecognitions.size)
                         if (updatedRecognitions.size > 0) {
                             for (recognition in updatedRecognitions) {
                                 if (recognition.label == LABEL_GOLD_MINERAL) {
                                     foundGold = true
                                 } else {
-                                    if (elapsedTime.seconds() > 0.5) {
-                                        rotate(-30.0, 0.34)
+                                    if (elapsedTime.seconds() > 0.35) {
+                                        when (k) {
+                                            1 -> {
+                                                rotate(30.0, 0.34)
+                                            }
+                                            2 -> {
+                                                rotate(-60.0, power = 0.34)
+                                                // If looking at the right mineral
+                                                // we consider it to be gold, so the program doesn't
+                                                // stop even if it missed the gold
+                                                foundGold = true
+                                            }
+                                        }
+                                        k++
                                         elapsedTime.reset()
-                                        goldPos++
                                     }
                                 }
                             }
@@ -220,92 +156,47 @@ class AutoDepot : LinearOpMode() {
             }
         }
 
+        when (k) {
+            1 -> {
+                goldPos = 2
+            }
+            2 -> {
+                goldPos = 1
+            }
+            3 -> {
+                goldPos = 3
+            }
+        }
+
         if (tfod != null) {
             tfod?.shutdown()
         }
 
-        elapsedTime.reset()
+        /*
+        *  goldPos legend
+        *  1 -> left
+        *  2 -> center
+        *  3 -> right
+        * */
 
         when (goldPos) {
             1 -> {
-                while (elapsedTime.seconds() < 0.9 && opModeIsActive()) {
-                    val rotation = imu
-                            .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                            .firstAngle
-                            .toDouble()
-                    when {
-                        rotation > -140.0 -> {
-                            hardware.leftMotorPower = 0.55
-                            hardware.rightMotorPower = 0.35
-                        }
-                        rotation < -150.0 -> {
-                            hardware.leftMotorPower = 0.35
-                            hardware.rightMotorPower = 0.55
-                        }
-                        else -> {
-                            hardware.leftMotorPower = 0.4
-                            hardware.rightMotorPower = 0.4
-                        }
-                    }
-                    telemetry.update()
-                }
+                goForwardOnAngle(time = 1.0, power=0.35, angle=-135.0)
+                goForwardOnAngle(time = 0.4, power=0.35, angle=-145.0)
             }
             2 -> {
-                while (elapsedTime.seconds() < 1.4 && opModeIsActive()) {
-                    val rotation = imu
-                            .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                            .firstAngle
-                            .toDouble()
-                    when {
-                        rotation < 0 && rotation > -175.0 -> {
-                            hardware.leftMotorPower = 0.55
-                            hardware.rightMotorPower = 0.35
-                        }
-                        rotation > 0 && rotation < 175.0 -> {
-                            hardware.leftMotorPower = 0.35
-                            hardware.rightMotorPower = 0.55
-                        }
-                        else -> {
-                            hardware.leftMotorPower = 0.4
-                            hardware.rightMotorPower = 0.4
-                        }
-                    }
-                    telemetry.update()
-                }
+                goForwardOnAngle(time = 1.3, power = 0.45, angle = 180.0)
+                rotate(47.0, power = 0.34)
+                goForwardOnAngle(time = 0.15, power = 0.45, angle = 135.0)
             }
             3 -> {
-                while (elapsedTime.seconds() < 0.9 && opModeIsActive()) {
-                    val rotation = imu
-                            .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                            .firstAngle
-                            .toDouble()
-                    when {
-                        rotation > 150.0 -> {
-                            hardware.leftMotorPower = 0.55
-                            hardware.rightMotorPower = 0.35
-                        }
-                        rotation < 140.0 -> {
-                            hardware.leftMotorPower = 0.35
-                            hardware.rightMotorPower = 0.55
-                        }
-                        else -> {
-                            hardware.leftMotorPower = 0.4
-                            hardware.rightMotorPower = 0.4
-                        }
-                    }
-                    telemetry.update()
-                }
+                goForwardOnAngle(time = 0.9, power = 0.45, angle = 145.0)
             }
         }
 
+        resetMovementMotors()
 
-        hardware.leftMotorPower = 0.0
-        hardware.rightMotorPower = 0.0
-
-        elapsedTime.reset()
-        while (elapsedTime.seconds() < 0.5 && opModeIsActive()) {
-            // WAIT 0.5 secs
-        }
+        waitForSeconds(0.5)
 
         elapsedTime.reset()
         while (elapsedTime.seconds() < 0.5 && opModeIsActive()) {
@@ -317,28 +208,196 @@ class AutoDepot : LinearOpMode() {
         // ====== GOING INTO THE CRATER ======
         // ===================================
 
-
         when (goldPos) {
             3 -> {
                 rotate(degrees = -80.0, power = 0.34)
-                elapsedTime.reset()
-                moveForwardOnAngle(45.0, 4.0)
+                goForwardOnAngle(time = 1.4, power = -0.45, angle = 45.0)
+                rotate(-80.0, power = 0.34)
+                dropTeamMarker()
+                letDownArm()
+                goForwardOnAngle(time = 0.6, power = 0.50, angle = -40.0)
+                liftIntake()
+                goForwardOnAngle(time = 1.5, power = 0.50, angle = -40.0)
             }
             2 -> {
-                rotate(degrees = -110.0, power = 0.34)
-                elapsedTime.reset()
-                moveForwardOnAngle(45.0, 4.0)
+                rotate(degrees = 80.0, power = 0.34)
+                dropTeamMarker()
+                letDownArm()
+                goForwardOnAngle(time = 0.6, power = 0.6, angle = -45.0)
+                liftIntake()
+                goForwardOnAngle(time = 1.3, power = 0.55, angle = -40.0)
             }
             1-> {
-                rotate(degrees = 80.0, power = 0.34)
-                elapsedTime.reset()
-                moveForwardOnAngle(-45.0, 4.0)
+                rotate(degrees = 85.0, power = 0.34)
+                goForwardOnAngle(time = 0.8, power = -0.45, angle = -45.0)
+                dropTeamMarker()
+                letDownArm()
+                goForwardOnAngle(time = 0.6, power = 0.55, angle = -40.0)
+                liftIntake()
+                goForwardOnAngle(time = 0.9, power = 0.55, angle = -40.0)
             }
         }
 
-        if (isStopRequested) {
-            mediaPlayer.stop()
+        /*
+        * ==============
+        * ==== STOP ====
+        * ==============
+        * */
+
+
+//        if (isStopRequested) {
+//            mediaPlayer.stop()
+//        }
+    }
+
+    private fun liftIntake() {
+        elapsedTime.reset()
+        while (elapsedTime.seconds() < 0.4 && opModeIsActive()) {
+            hardware.leftIntakeServoPos = Range.clip(hardware.leftIntakeServoPos + 0.02, 0.0, 0.38)
+            hardware.rightIntakeServoPos = Range.clip(hardware.rightIntakeServoPos - 0.02, 0.62, 1.0)
         }
+    }
+
+    private fun dropTeamMarker() {
+        elapsedTime.reset()
+        while (elapsedTime.seconds() < 1.0 && opModeIsActive()) {
+            hardware.leftIntakeServoPos = Range.clip(hardware.leftIntakeServoPos - 0.02, 0.0, 0.38)
+            hardware.rightIntakeServoPos = Range.clip(hardware.rightIntakeServoPos + 0.02, 0.62, 1.0)
+            hardware.scoopServoPos = Range.clip(hardware.scoopServoPos - 0.02, 0.45, 1.0)
+        }
+    }
+
+    private fun goForward(time: Double, power: Double = 0.3) {
+        elapsedTime.reset()
+        while (elapsedTime.seconds() < time && opModeIsActive()) {
+            hardware.leftMotorPower = power
+            hardware.rightMotorPower = power
+        }
+
+        resetMovementMotors()
+    }
+
+    private fun letDownArm() {
+        // === COBOR BRAT
+        elapsedTime.reset()
+        while (elapsedTime.seconds() < 0.225 && opModeIsActive()) {
+            hardware.leftArmPower = -0.2
+            hardware.rightArmPower = -0.2
+        }
+
+        hardware.leftArmPower = 0.0
+        hardware.rightArmPower = 0.0
+    }
+
+    private fun detachHook() {
+        elapsedTime.reset()
+        // === SCOT HOOK
+        while (elapsedTime.seconds() < 1.5 && opModeIsActive()) {
+            hardware.hookServoPos = Range.clip(hardware.hookServoPos + 0.05, 0.5, 1.0)
+        }
+    }
+
+    private fun moveLock() {
+        elapsedTime.reset()
+
+        while (elapsedTime.seconds() < 1.0 && opModeIsActive()) {
+            hardware.lockServoPos = Range.clip(hardware.lockServoPos + 0.05, 0.0, 0.5)
+        }
+    }
+
+    private fun goTowardsLanderToLiftHook() {
+        elapsedTime.reset()
+
+        // MERG SPRE LANDER CA SA FIE HOOKU MAI SUS
+        while (elapsedTime.seconds() < 0.1 && opModeIsActive()) {
+            hardware.leftMotorPower = 0.4
+            hardware.rightMotorPower = 0.4
+        }
+
+        resetMovementMotors()
+    }
+
+    private fun waitForSeconds(seconds: Double) {
+        elapsedTime.reset()
+
+        while (elapsedTime.seconds() < seconds && opModeIsActive()) {
+            // WAIT 0.75 secs
+        }
+    }
+
+    private fun pushLander() {
+        elapsedTime.reset()
+
+        // === MA IMPING IN LANDER
+        while (elapsedTime.seconds() < 0.7 && opModeIsActive()) {
+            hardware.leftArmPower = -0.3
+            hardware.rightArmPower = -0.3
+        }
+
+        hardware.leftArmPower = 0.0
+        hardware.rightArmPower = 0.0
+    }
+
+    private fun dropDown() {
+        elapsedTime.reset()
+
+        // === LAS USOR IN JOS
+        while (elapsedTime.seconds() < 2.8 && opModeIsActive()) {
+            hardware.leftArmPower = 0.08
+            hardware.rightArmPower = 0.08
+        }
+    }
+
+    private fun liftLock() {
+        elapsedTime.reset()
+
+        // === RIDIC IN SUS SI SCOT LOCK
+        while (elapsedTime.seconds() < 0.28 && opModeIsActive()) {
+            hardware.leftArmPower = 0.6
+            hardware.rightArmPower = 0.6
+
+            hardware.lockServoPos = Range.clip(hardware.lockServoPos - 0.05, 0.0, 0.5)
+        }
+    }
+
+    fun goForwardOnAngle(time: Double, power: Double, angle: Double) {
+        elapsedTime.reset()
+        val leftLimiter: (Double) -> Boolean
+        val rightLimiter: (Double) -> Boolean
+        val higherPower = power + 0.25
+        val lowerPower = power - 0.25
+        if (angle == 180.0) {
+            leftLimiter = { rotation -> rotation < 0 && rotation > -177.5 }
+            rightLimiter = { rotation -> rotation > 0 && rotation < 177.5 }
+        } else {
+            leftLimiter = { rotation -> rotation > angle + 2.5 }
+            rightLimiter = { rotation -> rotation < angle - 2.5 }
+        }
+        while (elapsedTime.seconds() < time && opModeIsActive()) {
+            val rotation = imu
+                    .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
+                    .firstAngle
+                    .toDouble()
+            when {
+                leftLimiter(rotation) -> {
+                    hardware.leftMotorPower = higherPower
+                    hardware.rightMotorPower = lowerPower
+                }
+                rightLimiter(rotation) -> {
+                    hardware.leftMotorPower = lowerPower
+                    hardware.rightMotorPower = higherPower
+                }
+                else -> {
+                    hardware.leftMotorPower = power
+                    hardware.rightMotorPower = power
+                }
+            }
+            if (power < 0.0) { telemetry.addData("Move", "Backwards") }
+            telemetry.addData("Movement", "LM: ${hardware.leftMotorPower}; RM: ${hardware.rightMotorPower}")
+            telemetry.update()
+        }
+
+        resetMovementMotors()
     }
 
     private fun resetAngle() {
@@ -392,8 +451,7 @@ class AutoDepot : LinearOpMode() {
             while (opModeIsActive() && getAngle() < degrees) { telemetry.update() }
         }
 
-        hardware.leftMotorPower = 0.0
-        hardware.rightMotorPower = 0.0
+        resetMovementMotors()
 
         // wait for rotation to stop.
         sleep(1000)
@@ -401,6 +459,12 @@ class AutoDepot : LinearOpMode() {
         // reset angle tracking on new heading.
         resetAngle()
     }
+
+    private fun resetMovementMotors() {
+        hardware.leftMotorPower = 0.0
+        hardware.rightMotorPower = 0.0
+    }
+
 
     fun moveForwardOnAngle(angle: Double, time: Double) {
         while (elapsedTime.seconds() < time && opModeIsActive()) {
