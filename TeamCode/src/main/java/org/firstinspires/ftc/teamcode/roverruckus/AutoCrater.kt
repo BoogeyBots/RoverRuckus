@@ -16,8 +16,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 
 
-@Autonomous(name = "Depot", group = "Rover Ruckus")
-class AutoDepot : LinearOpMode() {
+@Autonomous(name = "Crater", group = "Rover Ruckus")
+class AutoCrater : LinearOpMode() {
     val hardware = RoverRuckusHardware()
     val elapsedTime = ElapsedTime()
 
@@ -81,13 +81,13 @@ class AutoDepot : LinearOpMode() {
 
         pushLander()
 
-        waitForSeconds(0.5)
+        waitForSeconds(0.3)
 
         goTowardsLanderToLiftHook()
 
         moveLock()
 
-        waitForSeconds(0.5)
+        waitForSeconds(0.3)
 
         detachHook()
 
@@ -95,8 +95,6 @@ class AutoDepot : LinearOpMode() {
         rotate(-165.0, 0.34)
 
         waitForSeconds(0.25)
-
-        liftArm()
 
         initVuforia()
 
@@ -183,85 +181,60 @@ class AutoDepot : LinearOpMode() {
 
         when (goldPos) {
             1 -> {
-                goForwardOnAngle(time = 1.0, power=0.35, angle=-135.0)
-                goForwardOnAngle(time = 0.4, power=0.35, angle=-145.0)
+                goForwardOnAngle(time = 0.7, power=0.45, angle=-135.0)
+                waitForSeconds(0.75)
+                goForwardOnAngle(time = 0.7, power=-0.45, angle=-135.0)
+                rotate(degrees = -(180.0 - 55.0), power = 0.34)
+                goForwardOnAngle(time = 1.2, power = -0.45, angle = 90.0)
+
+                // ============================
+                waitForSeconds(0.2)
+                rotate(degrees = 45.0, power = 0.34)
+
+                goForwardOnAngle(time = 1.35, power = -0.45, angle = 145.0)
+                dropTeamMarker()
+                waitForSeconds(0.5)
+                goForwardOnAngle(time = 1.15, power = 0.5, angle = 142.0)
+                goForwardOnAngle(time = 1.2, power = 0.5, angle = 145.0)
+                letDownArm()
             }
             2 -> {
-                goForwardOnAngle(time = 1.3, power = 0.45, angle = 180.0)
-                rotate(47.0, power = 0.34)
-                goForwardOnAngle(time = 0.15, power = 0.45, angle = 135.0)
+                goForwardOnAngle(time = 0.7, power = 0.45, angle = 180.0)
+                waitForSeconds(0.7)
+                goForwardOnAngle(time = 0.7, power = -0.45, angle = 180.0)
+                rotate(degrees = -90.0, power = 0.34)
+                goForwardOnAngle(time = 1.35, power = -0.45, angle = 90.0)
+
+                // ============================
+                waitForSeconds(0.2)
+                rotate(degrees = 45.0, power = 0.34)
+
+                goForwardOnAngle(time = 1.35, power = -0.45, angle = 143.0)
+                dropTeamMarker()
+                waitForSeconds(0.5)
+                goForwardOnAngle(time = 1.25, power = 0.5, angle = 142.0)
+                goForwardOnAngle(time = 1.35, power = 0.5, angle = 147.0)
+                letDownArm()
             }
             3 -> {
-                goForwardOnAngle(time = 0.9, power = 0.45, angle = 145.0)
-            }
-        }
+                goForwardOnAngle(time = 0.7, power = 0.45, angle = 145.0)
+                waitForSeconds(0.75)
+                goForwardOnAngle(time = 0.7, power = -0.45, angle = 147.0)
+                rotate(degrees = -55.0, power = 0.34)
+                goForwardOnAngle(time = 1.4, power = -0.45, angle = 90.0)
 
-        resetMovementMotors()
+                // ============================
+                waitForSeconds(0.2)
+                rotate(degrees = 45.0, power = 0.34)
 
-        waitForSeconds(0.5)
-
-        elapsedTime.reset()
-        while (elapsedTime.seconds() < 0.5 && opModeIsActive()) {
-            hardware.leftIntakeServoPos = 0.32
-            hardware.rightIntakeServoPos = 0.68
-        }
-
-        // ===================================
-        // ====== GOING INTO THE CRATER ======
-        // ===================================
-
-        when (goldPos) {
-            3 -> {
-                rotate(degrees = -80.0, power = 0.34)
-                goForwardOnAngle(time = 1.4, power = -0.45, angle = 45.0)
-                rotate(-80.0, power = 0.34)
+                goForwardOnAngle(time = 1.35, power = -0.45, angle = 145.0)
                 dropTeamMarker()
+                waitForSeconds(0.5)
+                goForwardOnAngle(time = 1.23, power = 0.5, angle = 142.0)
+                goForwardOnAngle(time = 1.2, power = 0.5, angle = 145.0)
                 letDownArm()
-                goForwardOnAngle(time = 0.6, power = 0.50, angle = -40.0)
-                liftIntake()
-                goForwardOnAngle(time = 0.75, power = 0.50, angle = -37.0)
-                goForwardOnAngle(time = 0.75, power = 0.50, angle = -40.0)
-            }
-            2 -> {
-                rotate(degrees = 70.0, power = 0.34)
-                dropTeamMarker()
-                letDownArm()
-                goForwardOnAngle(time = 0.6, power = 0.6, angle = -45.0)
-                liftIntake()
-                goForwardOnAngle(time = 1.269, power = 0.55, angle = -40.0)
-            }
-            1-> {
-                rotate(degrees = 85.0, power = 0.34)
-                goForwardOnAngle(time = 1.0, power = -0.45, angle = -42.0)
-                dropTeamMarker()
-                letDownArm()
-                goForwardOnAngle(time = 0.6, power = 0.55, angle = -40.0)
-                liftIntake()
-                goForwardOnAngle(time = 0.9, power = 0.55, angle = -40.0)
             }
         }
-
-        /*
-        * ==============
-        * ==== STOP ====
-        * ==============
-        * */
-
-
-//        if (isStopRequested) {
-//            mediaPlayer.stop()
-//        }
-    }
-
-    private fun liftArm() {
-        elapsedTime.reset()
-        while (elapsedTime.seconds() < 0.4 && opModeIsActive()) {
-            hardware.leftArmPower = 0.2
-            hardware.rightArmPower = 0.2
-        }
-
-        hardware.leftArmPower = 0.0
-        hardware.rightArmPower = 0.0
     }
 
     private fun liftIntake() {
@@ -294,7 +267,7 @@ class AutoDepot : LinearOpMode() {
     private fun letDownArm() {
         // === COBOR BRAT
         elapsedTime.reset()
-        while (elapsedTime.seconds() < 0.43 && opModeIsActive()) {
+        while (elapsedTime.seconds() < 0.225 && opModeIsActive()) {
             hardware.leftArmPower = -0.2
             hardware.rightArmPower = -0.2
         }
