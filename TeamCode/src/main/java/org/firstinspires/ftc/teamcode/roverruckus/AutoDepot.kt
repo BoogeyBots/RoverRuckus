@@ -69,7 +69,14 @@ class AutoDepot : LinearOpMode() {
         telemetry.addData("INIT", "over!")
         telemetry.update()
 
-        waitForStart()
+
+
+//        waitForStart()
+        while (!opModeIsActive() && !isStopRequested) {
+            telemetry.addData("Status", "Waiting in Init")
+            telemetry.update()
+        }
+
 
         imu.startAccelerationIntegration(Position(), Velocity(), 1000)
 
@@ -213,14 +220,14 @@ class AutoDepot : LinearOpMode() {
         when (goldPos) {
             3 -> {
                 rotate(degrees = -80.0, power = 0.34)
-                goForwardOnAngle(time = 1.4, power = -0.45, angle = 45.0)
+                goForwardOnAngle(time = 1.27, power = -0.45, angle = 45.0)
                 rotate(-80.0, power = 0.34)
                 dropTeamMarker()
                 letDownArm()
                 goForwardOnAngle(time = 0.6, power = 0.50, angle = -40.0)
                 liftIntake()
                 goForwardOnAngle(time = 0.75, power = 0.50, angle = -37.0)
-                goForwardOnAngle(time = 0.75, power = 0.50, angle = -40.0)
+                goForwardOnAngle(time = 0.65, power = 0.50, angle = -40.0)
             }
             2 -> {
                 rotate(degrees = 70.0, power = 0.34)
@@ -228,16 +235,16 @@ class AutoDepot : LinearOpMode() {
                 letDownArm()
                 goForwardOnAngle(time = 0.6, power = 0.6, angle = -45.0)
                 liftIntake()
-                goForwardOnAngle(time = 1.269, power = 0.55, angle = -40.0)
+                goForwardOnAngle(time = 1.35, power = 0.55, angle = -40.0)
             }
             1-> {
                 rotate(degrees = 85.0, power = 0.34)
                 goForwardOnAngle(time = 1.0, power = -0.45, angle = -42.0)
                 dropTeamMarker()
-                letDownArm()
                 goForwardOnAngle(time = 0.6, power = 0.55, angle = -40.0)
                 liftIntake()
-                goForwardOnAngle(time = 0.9, power = 0.55, angle = -40.0)
+                goForwardOnAngle(time = 1.1, power = 0.55, angle = -43.0)
+                letDownArm()
             }
         }
 

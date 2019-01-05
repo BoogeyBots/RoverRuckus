@@ -69,7 +69,11 @@ class AutoCrater : LinearOpMode() {
         telemetry.addData("INIT", "over!")
         telemetry.update()
 
-        waitForStart()
+//        waitForStart()
+        while (!opModeIsActive() && !isStopRequested) {
+            telemetry.addData("Status", "Waiting in Init")
+            telemetry.update()
+        }
 
         imu.startAccelerationIntegration(Position(), Velocity(), 1000)
 
@@ -185,7 +189,7 @@ class AutoCrater : LinearOpMode() {
                 waitForSeconds(0.75)
                 goForwardOnAngle(time = 0.7, power=-0.45, angle=-135.0)
                 rotate(degrees = -(180.0 - 55.0), power = 0.34)
-                goForwardOnAngle(time = 1.2, power = -0.45, angle = 90.0)
+                goForwardOnAngle(time = 1.65, power = -0.35, angle = 90.0)
 
                 // ============================
                 waitForSeconds(0.2)
@@ -194,6 +198,7 @@ class AutoCrater : LinearOpMode() {
                 goForwardOnAngle(time = 1.35, power = -0.45, angle = 145.0)
                 dropTeamMarker()
                 waitForSeconds(0.5)
+                goForwardOnAngle(time = 0.1, power = 0.7, angle = 142.0)
                 goForwardOnAngle(time = 1.15, power = 0.5, angle = 142.0)
                 goForwardOnAngle(time = 1.2, power = 0.5, angle = 145.0)
                 letDownArm()
@@ -203,7 +208,7 @@ class AutoCrater : LinearOpMode() {
                 waitForSeconds(0.7)
                 goForwardOnAngle(time = 0.7, power = -0.45, angle = 180.0)
                 rotate(degrees = -90.0, power = 0.34)
-                goForwardOnAngle(time = 1.35, power = -0.45, angle = 90.0)
+                goForwardOnAngle(time = 1.6, power = -0.45, angle = 90.0)
 
                 // ============================
                 waitForSeconds(0.2)
@@ -212,8 +217,9 @@ class AutoCrater : LinearOpMode() {
                 goForwardOnAngle(time = 1.35, power = -0.45, angle = 143.0)
                 dropTeamMarker()
                 waitForSeconds(0.5)
-                goForwardOnAngle(time = 1.25, power = 0.5, angle = 142.0)
-                goForwardOnAngle(time = 1.35, power = 0.5, angle = 147.0)
+                goForwardOnAngle(time = 0.2, power = 0.8, angle = 142.0)
+                goForwardOnAngle(time = 1.1, power = 0.5, angle = 142.0)
+                goForwardOnAngle(time = 1.0, power = 0.5, angle = 147.0)
                 letDownArm()
             }
             3 -> {
@@ -221,7 +227,7 @@ class AutoCrater : LinearOpMode() {
                 waitForSeconds(0.75)
                 goForwardOnAngle(time = 0.7, power = -0.45, angle = 147.0)
                 rotate(degrees = -55.0, power = 0.34)
-                goForwardOnAngle(time = 1.4, power = -0.45, angle = 90.0)
+                goForwardOnAngle(time = 1.8, power = -0.35, angle = 90.0)
 
                 // ============================
                 waitForSeconds(0.2)
@@ -230,8 +236,9 @@ class AutoCrater : LinearOpMode() {
                 goForwardOnAngle(time = 1.35, power = -0.45, angle = 145.0)
                 dropTeamMarker()
                 waitForSeconds(0.5)
-                goForwardOnAngle(time = 1.23, power = 0.5, angle = 142.0)
-                goForwardOnAngle(time = 1.2, power = 0.5, angle = 145.0)
+                goForwardOnAngle(time = 0.1, power = 0.7, angle = 142.0)
+                goForwardOnAngle(time = 1.13, power = 0.5, angle = 142.0)
+                goForwardOnAngle(time = 1.2, power = 0.5, angle = 149.0)
                 letDownArm()
             }
         }
