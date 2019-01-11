@@ -56,6 +56,8 @@ class RoverRuckusHardware {
             }
         }
 
+
+
     var scoopServoPos: Double = 0.0
         set(value) {
             if (value != field) {
@@ -111,6 +113,7 @@ class RoverRuckusHardware {
         rightArm.direction = DcMotorSimple.Direction.REVERSE
         leftArm.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         rightArm.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        
 
         leftIntakeServo = hardwareMap.get(Servo::class.java, "l_int")
         rightIntakeServo = hardwareMap.get(Servo::class.java, "r_int")
