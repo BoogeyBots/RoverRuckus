@@ -187,7 +187,7 @@ class AutoCrater : LinearOpMode() {
             1 -> {
                 goForwardOnAngle(time = 0.7, power=0.45, angle=-135.0)
                 waitForSeconds(0.75)
-                goForwardOnAngle(time = 0.7, power=-0.45, angle=-135.0)
+                goForwardOnAngle(time = 0.65, power=-0.45, angle=-135.0)
                 rotate(degrees = -(180.0 - 55.0), power = 0.34)
                 goForwardOnAngle(time = 1.65, power = -0.35, angle = 90.0)
 
@@ -195,50 +195,50 @@ class AutoCrater : LinearOpMode() {
                 waitForSeconds(0.2)
                 rotate(degrees = 45.0, power = 0.34)
 
-                goForwardOnAngle(time = 1.35, power = -0.45, angle = 145.0)
+                goForwardOnAngle(time = 1.52, power = -0.45, angle = 145.0)
                 dropTeamMarker()
                 waitForSeconds(0.5)
-                goForwardOnAngle(time = 0.1, power = 0.7, angle = 142.0)
-                goForwardOnAngle(time = 1.15, power = 0.5, angle = 142.0)
-                goForwardOnAngle(time = 1.2, power = 0.5, angle = 145.0)
+                goForwardOnAngle(time = 0.1, power = 0.6, angle = 142.0)
+                goForwardOnAngle(time = 0.8, power = 0.8, angle = 142.0)
+                goForwardOnAngle(time = 0.6, power = 0.8, angle = 145.0)
                 letDownArm()
             }
             2 -> {
                 goForwardOnAngle(time = 0.7, power = 0.45, angle = 180.0)
-                waitForSeconds(0.7)
-                goForwardOnAngle(time = 0.7, power = -0.45, angle = 180.0)
+                waitForSeconds(0.65)
+                goForwardOnAngle(time = 0.62, power = -0.45, angle = 180.0)
                 rotate(degrees = -90.0, power = 0.34)
-                goForwardOnAngle(time = 1.6, power = -0.45, angle = 90.0)
+                goForwardOnAngle(time = 1.65, power = -0.45, angle = 90.0)
 
                 // ============================
                 waitForSeconds(0.2)
                 rotate(degrees = 45.0, power = 0.34)
 
-                goForwardOnAngle(time = 1.35, power = -0.45, angle = 143.0)
+                goForwardOnAngle(time = 1.45, power = -0.45, angle = 143.0)
                 dropTeamMarker()
                 waitForSeconds(0.5)
                 goForwardOnAngle(time = 0.2, power = 0.8, angle = 142.0)
-                goForwardOnAngle(time = 1.1, power = 0.5, angle = 142.0)
-                goForwardOnAngle(time = 1.0, power = 0.5, angle = 147.0)
+                goForwardOnAngle(time = 0.6, power = 0.8, angle = 142.0)
+                goForwardOnAngle(time = 0.55, power = 0.8, angle = 147.0)
                 letDownArm()
             }
             3 -> {
                 goForwardOnAngle(time = 0.7, power = 0.45, angle = 145.0)
                 waitForSeconds(0.75)
-                goForwardOnAngle(time = 0.7, power = -0.45, angle = 147.0)
+                goForwardOnAngle(time = 0.65, power = -0.45, angle = 147.0)
                 rotate(degrees = -55.0, power = 0.34)
-                goForwardOnAngle(time = 1.8, power = -0.35, angle = 90.0)
+                goForwardOnAngle(time = 2.1, power = -0.35, angle = 90.0)
 
                 // ============================
                 waitForSeconds(0.2)
                 rotate(degrees = 45.0, power = 0.34)
 
-                goForwardOnAngle(time = 1.35, power = -0.45, angle = 145.0)
+                goForwardOnAngle(time = 1.4, power = -0.45, angle = 145.0)
                 dropTeamMarker()
                 waitForSeconds(0.5)
                 goForwardOnAngle(time = 0.1, power = 0.7, angle = 142.0)
-                goForwardOnAngle(time = 1.13, power = 0.5, angle = 142.0)
-                goForwardOnAngle(time = 1.2, power = 0.5, angle = 149.0)
+                goForwardOnAngle(time = 0.7, power = 0.8, angle = 142.0)
+                goForwardOnAngle(time = 0.6, power = 0.8, angle = 149.0)
                 letDownArm()
             }
         }
@@ -315,7 +315,6 @@ class AutoCrater : LinearOpMode() {
         elapsedTime.reset()
 
         while (elapsedTime.seconds() < seconds && opModeIsActive()) {
-            // WAIT 0.75 secs
         }
     }
 
@@ -355,11 +354,11 @@ class AutoCrater : LinearOpMode() {
     }
 
     fun goForwardOnAngle(time: Double, power: Double, angle: Double) {
-        elapsedTime.reset()
         val leftLimiter: (Double) -> Boolean
         val rightLimiter: (Double) -> Boolean
         val higherPower = power + 0.25
         val lowerPower = power - 0.25
+        val normalPower = power
         if (angle == 180.0) {
             leftLimiter = { rotation -> rotation < 0 && rotation > -177.5 }
             rightLimiter = { rotation -> rotation > 0 && rotation < 177.5 }
@@ -367,6 +366,8 @@ class AutoCrater : LinearOpMode() {
             leftLimiter = { rotation -> rotation > angle + 2.5 }
             rightLimiter = { rotation -> rotation < angle - 2.5 }
         }
+
+        elapsedTime.reset()
         while (elapsedTime.seconds() < time && opModeIsActive()) {
             val rotation = imu
                     .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
@@ -381,13 +382,16 @@ class AutoCrater : LinearOpMode() {
                     hardware.leftMotorPower = lowerPower
                     hardware.rightMotorPower = higherPower
                 }
-                else -> {
+                !leftLimiter(rotation) && !rightLimiter(rotation) -> {
                     hardware.leftMotorPower = power
                     hardware.rightMotorPower = power
+                    telemetry.addData("MOVING NORMAL", "AR TREBUI SA MEARGA")
                 }
             }
             if (power < 0.0) { telemetry.addData("Move", "Backwards") }
             telemetry.addData("Movement", "LM: ${hardware.leftMotorPower}; RM: ${hardware.rightMotorPower}")
+            telemetry.addData("Time:", "Elpsdtm: ${elapsedTime.seconds()}; time: $time")
+            telemetry.addData("angles", "LL: ${leftLimiter(rotation)}; RL: ${rightLimiter(rotation)}; Rot: $rotation")
             telemetry.update()
         }
 
@@ -457,31 +461,6 @@ class AutoCrater : LinearOpMode() {
     private fun resetMovementMotors() {
         hardware.leftMotorPower = 0.0
         hardware.rightMotorPower = 0.0
-    }
-
-
-    fun moveForwardOnAngle(angle: Double, time: Double) {
-        while (elapsedTime.seconds() < time && opModeIsActive()) {
-            val rotation = imu
-                    .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                    .firstAngle
-                    .toDouble()
-            when {
-                rotation > angle + 5.0 -> {
-                    hardware.leftMotorPower = 0.55
-                    hardware.rightMotorPower = 0.35
-                }
-                rotation < angle - 5.0 -> {
-                    hardware.leftMotorPower = 0.35
-                    hardware.rightMotorPower = 0.55
-                }
-                else -> {
-                    hardware.leftMotorPower = 0.4
-                    hardware.rightMotorPower = 0.4
-                }
-            }
-            telemetry.update()
-        }
     }
 
     internal fun composeTelemetry() {

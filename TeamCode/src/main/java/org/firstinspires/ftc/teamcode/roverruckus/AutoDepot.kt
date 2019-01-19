@@ -62,21 +62,14 @@ class AutoDepot : LinearOpMode() {
         imu = hardwareMap.get(BNO055IMU::class.java, "imu")
         imu.initialize(imuParams)
 
-//        mediaPlayer = MediaPlayer.create(hardwareMap.appContext, R.raw.bonjovi)
-//        mediaPlayer.setVolume(1.0f, 1.0f)
-//        mediaPlayer.start()
-
         telemetry.addData("INIT", "over!")
         telemetry.update()
 
-
-
-//        waitForStart()
+//      waitForStart()
         while (!opModeIsActive() && !isStopRequested) {
             telemetry.addData("Status", "Waiting in Init")
             telemetry.update()
         }
-
 
         imu.startAccelerationIntegration(Position(), Velocity(), 1000)
 
@@ -191,12 +184,12 @@ class AutoDepot : LinearOpMode() {
         when (goldPos) {
             1 -> {
                 goForwardOnAngle(time = 1.0, power=0.35, angle=-135.0)
-                goForwardOnAngle(time = 0.4, power=0.35, angle=-145.0)
+                goForwardOnAngle(time = 0.5, power=0.45, angle=-145.0)
             }
             2 -> {
                 goForwardOnAngle(time = 1.3, power = 0.45, angle = 180.0)
                 rotate(47.0, power = 0.34)
-                goForwardOnAngle(time = 0.15, power = 0.45, angle = 135.0)
+                goForwardOnAngle(time = 0.24, power = 0.65, angle = 135.0)
             }
             3 -> {
                 goForwardOnAngle(time = 0.9, power = 0.45, angle = 145.0)
@@ -218,25 +211,6 @@ class AutoDepot : LinearOpMode() {
         // ===================================
 
         when (goldPos) {
-            3 -> {
-                rotate(degrees = -80.0, power = 0.34)
-                goForwardOnAngle(time = 1.27, power = -0.45, angle = 45.0)
-                rotate(-80.0, power = 0.34)
-                dropTeamMarker()
-                letDownArm()
-                goForwardOnAngle(time = 0.6, power = 0.50, angle = -40.0)
-                liftIntake()
-                goForwardOnAngle(time = 0.75, power = 0.50, angle = -37.0)
-                goForwardOnAngle(time = 0.65, power = 0.50, angle = -40.0)
-            }
-            2 -> {
-                rotate(degrees = 70.0, power = 0.34)
-                dropTeamMarker()
-                letDownArm()
-                goForwardOnAngle(time = 0.6, power = 0.6, angle = -45.0)
-                liftIntake()
-                goForwardOnAngle(time = 1.35, power = 0.55, angle = -40.0)
-            }
             1-> {
                 rotate(degrees = 85.0, power = 0.34)
                 goForwardOnAngle(time = 1.0, power = -0.45, angle = -42.0)
@@ -246,6 +220,25 @@ class AutoDepot : LinearOpMode() {
                 goForwardOnAngle(time = 1.1, power = 0.55, angle = -43.0)
                 letDownArm()
             }
+            2 -> {
+                rotate(degrees = 70.0, power = 0.34)
+                dropTeamMarker()
+                letDownArm()
+                goForwardOnAngle(time = 0.6, power = 0.6, angle = -45.0)
+                liftIntake()
+                goForwardOnAngle(time = 1.35, power = 0.55, angle = -40.0)
+            }
+            3 -> {
+                rotate(degrees = -80.0, power = 0.34)
+                goForwardOnAngle(time = 1.27, power = -0.55, angle = 45.0)
+                rotate(-80.0, power = 0.34)
+                dropTeamMarker()
+                letDownArm()
+                goForwardOnAngle(time = 0.6, power = 0.50, angle = -40.0)
+                liftIntake()
+                goForwardOnAngle(time = 0.75, power = 0.50, angle = -37.0)
+                goForwardOnAngle(time = 0.65, power = 0.50, angle = -32.0)
+            }
         }
 
         /*
@@ -253,11 +246,6 @@ class AutoDepot : LinearOpMode() {
         * ==== STOP ====
         * ==============
         * */
-
-
-//        if (isStopRequested) {
-//            mediaPlayer.stop()
-//        }
     }
 
     private fun liftArm() {
