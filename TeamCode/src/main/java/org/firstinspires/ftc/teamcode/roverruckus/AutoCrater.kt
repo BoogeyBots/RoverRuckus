@@ -46,8 +46,8 @@ class AutoCrater : LinearOpMode() {
 
         hardware.lockServoPos = 0.5
         hardware.hookServoPos = 0.5
-        hardware.leftIntakeServoPos = 0.1
-        hardware.rightIntakeServoPos = 0.9
+        hardware.leftIntakeServoPos = 0.17
+        hardware.rightIntakeServoPos = 0.83
         hardware.scoopServoPos = 1.0
         telemetry.addData("Servo intake", "L: ${hardware.leftIntakeServoPos}, R: ${hardware.rightIntakeServoPos}")
 
@@ -108,6 +108,7 @@ class AutoCrater : LinearOpMode() {
             telemetry.addData("Sorry!", "This device is not compatible with TFOD")
         }
 
+        CameraDevice.getInstance().setFlashTorchMode(true);
 
         goForward(time=0.2, power=0.3)
 
@@ -159,6 +160,7 @@ class AutoCrater : LinearOpMode() {
                 }
             }
         }
+        CameraDevice.getInstance().setFlashTorchMode(false);
 
         when (k) {
             1 -> {
@@ -200,13 +202,13 @@ class AutoCrater : LinearOpMode() {
                 waitForSeconds(0.5)
                 goForwardOnAngle(time = 0.1, power = 0.6, angle = 142.0)
                 goForwardOnAngle(time = 0.8, power = 0.8, angle = 142.0)
-                goForwardOnAngle(time = 0.6, power = 0.8, angle = 145.0)
+                goForwardOnAngle(time = 0.6, power = 0.6, angle = 145.0)
                 letDownArm()
             }
             2 -> {
                 goForwardOnAngle(time = 0.7, power = 0.45, angle = 180.0)
                 waitForSeconds(0.65)
-                goForwardOnAngle(time = 0.62, power = -0.45, angle = 180.0)
+                goForwardOnAngle(time = 0.72, power = -0.45, angle = 180.0)
                 rotate(degrees = -90.0, power = 0.34)
                 goForwardOnAngle(time = 1.65, power = -0.45, angle = 90.0)
 
@@ -214,31 +216,31 @@ class AutoCrater : LinearOpMode() {
                 waitForSeconds(0.2)
                 rotate(degrees = 45.0, power = 0.34)
 
-                goForwardOnAngle(time = 1.45, power = -0.45, angle = 143.0)
+                goForwardOnAngle(time = 1.55, power = -0.45, angle = 143.0)
                 dropTeamMarker()
                 waitForSeconds(0.5)
                 goForwardOnAngle(time = 0.2, power = 0.8, angle = 142.0)
                 goForwardOnAngle(time = 0.6, power = 0.8, angle = 142.0)
-                goForwardOnAngle(time = 0.55, power = 0.8, angle = 147.0)
+                goForwardOnAngle(time = 0.55, power = 0.6, angle = 147.0)
                 letDownArm()
             }
             3 -> {
                 goForwardOnAngle(time = 0.7, power = 0.45, angle = 145.0)
                 waitForSeconds(0.75)
-                goForwardOnAngle(time = 0.65, power = -0.45, angle = 147.0)
+                goForwardOnAngle(time = 0.72, power = -0.45, angle = 147.0)
                 rotate(degrees = -55.0, power = 0.34)
-                goForwardOnAngle(time = 2.1, power = -0.35, angle = 90.0)
+                goForwardOnAngle(time = 2.0, power = -0.4, angle = 90.0)
 
                 // ============================
                 waitForSeconds(0.2)
                 rotate(degrees = 45.0, power = 0.34)
 
-                goForwardOnAngle(time = 1.4, power = -0.45, angle = 145.0)
+                goForwardOnAngle(time = 1.4, power = -0.48, angle = 145.0)
                 dropTeamMarker()
                 waitForSeconds(0.5)
                 goForwardOnAngle(time = 0.1, power = 0.7, angle = 142.0)
-                goForwardOnAngle(time = 0.7, power = 0.8, angle = 142.0)
-                goForwardOnAngle(time = 0.6, power = 0.8, angle = 149.0)
+                goForwardOnAngle(time = 0.7, power = 0.7, angle = 142.0)
+                goForwardOnAngle(time = 0.47, power = 0.55, angle = 149.0)
                 letDownArm()
             }
         }

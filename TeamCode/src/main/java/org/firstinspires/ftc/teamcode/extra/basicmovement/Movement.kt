@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.extra.basicmovement
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.util.Range
 
 @TeleOp(name = "DriveMode", group = "Movement")
+@Disabled
 class Movement : OpMode() {
     private var leftMotor: DcMotor? = null
     private var rightMotor: DcMotor? = null

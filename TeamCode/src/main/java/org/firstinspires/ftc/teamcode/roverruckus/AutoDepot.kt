@@ -46,8 +46,8 @@ class AutoDepot : LinearOpMode() {
 
         hardware.lockServoPos = 0.5
         hardware.hookServoPos = 0.5
-        hardware.leftIntakeServoPos = 0.1
-        hardware.rightIntakeServoPos = 0.9
+        hardware.leftIntakeServoPos = 0.17
+        hardware.rightIntakeServoPos = 0.83
         hardware.scoopServoPos = 1.0
         telemetry.addData("Servo intake", "L: ${hardware.leftIntakeServoPos}, R: ${hardware.rightIntakeServoPos}")
 
@@ -105,6 +105,7 @@ class AutoDepot : LinearOpMode() {
         } else {
             telemetry.addData("Sorry!", "This device is not compatible with TFOD")
         }
+        CameraDevice.getInstance().setFlashTorchMode(true);
 
 
         goForward(time=0.2, power=0.3)
@@ -157,6 +158,8 @@ class AutoDepot : LinearOpMode() {
                 }
             }
         }
+
+        CameraDevice.getInstance().setFlashTorchMode(false);
 
         when (k) {
             1 -> {
@@ -226,7 +229,8 @@ class AutoDepot : LinearOpMode() {
                 letDownArm()
                 goForwardOnAngle(time = 0.6, power = 0.6, angle = -45.0)
                 liftIntake()
-                goForwardOnAngle(time = 1.35, power = 0.55, angle = -40.0)
+                goForwardOnAngle(time = 0.7, power = 0.55, angle = -36.0)
+                goForwardOnAngle(time = 0.65, power = 0.55, angle = -40.0)
             }
             3 -> {
                 rotate(degrees = -80.0, power = 0.34)
@@ -237,7 +241,7 @@ class AutoDepot : LinearOpMode() {
                 goForwardOnAngle(time = 0.6, power = 0.50, angle = -40.0)
                 liftIntake()
                 goForwardOnAngle(time = 0.75, power = 0.50, angle = -37.0)
-                goForwardOnAngle(time = 0.65, power = 0.50, angle = -32.0)
+                goForwardOnAngle(time = 0.65, power = 0.50, angle = -42.0)
             }
         }
 
