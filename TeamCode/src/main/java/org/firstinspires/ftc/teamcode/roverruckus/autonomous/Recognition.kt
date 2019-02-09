@@ -9,6 +9,10 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 import org.firstinspires.ftc.robotcore.external.tfod.TfodRoverRuckus.*
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot
 
+enum class GoldPos {
+    LEFT, MIDDLE, RIGHT
+}
+
 fun Robot.initVuforia() {
     /*
      * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
@@ -35,7 +39,7 @@ fun Robot.initTfod() {
     tfod?.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL)
 }
 
-fun Robot.recognizeGold(): String {
+fun Robot.recognizeGold(): GoldPos {
     var k = 1
     val elapsedTime = ElapsedTime()
 
@@ -89,9 +93,8 @@ fun Robot.recognizeGold(): String {
     }
 
     return when (k) {
-        1 -> "CENTER"
-        2 -> "LEFT"
-        3 -> "RIGHT"
-        else -> "RIGHT"
+        1 -> GoldPos.MIDDLE
+        2 -> GoldPos.LEFT
+        else -> GoldPos.RIGHT
     }
 }

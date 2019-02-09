@@ -28,21 +28,21 @@ class Crater : LinearOpMode() {
         val goldPos = robot.recognizeGold()
 
         when (goldPos) {
-            "LEFT" -> {
+            GoldPos.LEFT -> {
                 robot.moveByCentimetersOnAngle(65.0, 40.0, 0.3)
                 waitForSeconds(0.5)
                 robot.moveByCentimetersOnAngle(-70.0, 40.0, 0.3)
                 waitForSeconds(0.5)
                 robot.rotate(-110.0)
             }
-            "CENTER" -> {
+            GoldPos.MIDDLE -> {
                 robot.moveByCentimetersOnAngle(45.0, 0.0, 0.3)
                 waitForSeconds(0.5)
                 robot.moveByCentimetersOnAngle(-40.0, 0.0, 0.3)
                 waitForSeconds(0.5)
                 robot.rotate(-80.0, 0.3)
             }
-            "RIGHT" -> {
+            GoldPos.RIGHT -> {
 
             }
         }
