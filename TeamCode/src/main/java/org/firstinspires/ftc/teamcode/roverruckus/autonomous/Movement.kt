@@ -128,14 +128,14 @@ fun Robot.moveByCentimetersOnAngle(centimeters: Double, angle: Double, power: Do
 fun Robot.moveByInchesOnAngle(inches: Double, angle: Double, power: Double = DEFAULT_MOTOR_SPEED) {
     val leftLimiter: (Double) -> Boolean
     val rightLimiter: (Double) -> Boolean
-    val higherPower = power + if (inches > 0) 0.25 else -0.25
-    val lowerPower = power + if (inches > 0) -0.25 else 0.25
+    val higherPower = power + if (inches > 0) 0.15 else -0.15
+    val lowerPower = power + if (inches > 0) -0.15 else 0.15
     if (angle == 180.0) {
         leftLimiter = { rotation -> rotation < 0 && rotation > -177.5 }
         rightLimiter = { rotation -> rotation > 0 && rotation < 177.5 }
     } else {
-        leftLimiter = { rotation -> rotation > angle + 5.0 }
-        rightLimiter = { rotation -> rotation < angle - 5.0 }
+        leftLimiter = { rotation -> rotation > angle + 2.5 }
+        rightLimiter = { rotation -> rotation < angle - 2.5 }
     }
 
     val linearOpMode = opMode as LinearOpMode
@@ -225,6 +225,14 @@ fun Robot.detachHook() {
     while (elapsedTime.seconds() < 1.5 && opModeIsActive) {
         hookServo.position = Range.clip(hookServo.position + 0.05, 0.5, 1.0)
     }
+}
+
+fun Robot.moveArm() {
+    elapsedTime.reset()
+    while (elapsedTime.seconds() < 0.9 && opModeIsActive) {
+        setMotorsPower(0.2, leftArm, rightArm)
+    }
+    setMotorsPower(0.0, leftArm, rightArm)
 }
 
 //--------------------------------------------------------------------------------------------------

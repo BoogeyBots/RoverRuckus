@@ -14,11 +14,12 @@ class Depot : LinearOpMode() {
         initialization()
         waitForStart()
 
-        robot.liftLock()
-        robot.dropDown()
-        robot.pushLander()
-        robot.detachHook()
-        robot.rotate(-170.0)
+//        robot.liftLock()
+//        robot.dropDown()
+//        robot.pushLander()
+//        robot.detachHook()
+//        robot.rotate(-170.0)
+        robot.moveByCentimetersOnAngle(-150.0, 0.0)
     }
 
     fun initialization() {

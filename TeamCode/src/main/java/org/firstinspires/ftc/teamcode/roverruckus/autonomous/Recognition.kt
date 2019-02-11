@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.roverruckus.autonomous
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
+import com.vuforia.CameraDevice
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
@@ -40,6 +41,7 @@ fun Robot.initTfod() {
 }
 
 fun Robot.recognizeGold(): GoldPos {
+    CameraDevice.getInstance().setFlashTorchMode(true);
     var k = 1
     val elapsedTime = ElapsedTime()
 
@@ -67,10 +69,10 @@ fun Robot.recognizeGold(): GoldPos {
                                 if (elapsedTime.seconds() > 0.35) {
                                     when (k) {
                                         1 -> {
-                                            rotate(35.0, 0.4)
+                                            rotate(25.0, 0.4)
                                         }
                                         2 -> {
-                                            rotate(-70.0, 0.4)
+                                            rotate(-50.0, 0.4)
                                             // If looking at the right mineral
                                             // we consider it to be gold, so the program doesn't
                                             // stop even if it missed the gold
@@ -91,6 +93,7 @@ fun Robot.recognizeGold(): GoldPos {
     if (tfod != null) {
         tfod?.shutdown()
     }
+    CameraDevice.getInstance().setFlashTorchMode(false);
 
     return when (k) {
         1 -> GoldPos.MIDDLE
