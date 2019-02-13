@@ -41,7 +41,7 @@ fun Robot.initTfod() {
 }
 
 fun Robot.recognizeGold(): GoldPos {
-    CameraDevice.getInstance().setFlashTorchMode(true);
+    //CameraDevice.getInstance().setFlashTorchMode(true);
     var k = 1
     val elapsedTime = ElapsedTime()
 
@@ -72,7 +72,7 @@ fun Robot.recognizeGold(): GoldPos {
                                             rotate(25.0, 0.4)
                                         }
                                         2 -> {
-                                            rotate(-50.0, 0.4)
+                                            rotate(-60.0, 0.4)
                                             // If looking at the right mineral
                                             // we consider it to be gold, so the program doesn't
                                             // stop even if it missed the gold
@@ -93,7 +93,7 @@ fun Robot.recognizeGold(): GoldPos {
     if (tfod != null) {
         tfod?.shutdown()
     }
-    CameraDevice.getInstance().setFlashTorchMode(false);
+    //CameraDevice.getInstance().setFlashTorchMode(false);
 
     return when (k) {
         1 -> GoldPos.MIDDLE

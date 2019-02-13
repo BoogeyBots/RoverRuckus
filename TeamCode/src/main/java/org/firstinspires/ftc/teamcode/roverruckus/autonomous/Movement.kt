@@ -98,16 +98,23 @@ fun Robot.rotate(degrees: Double, power: Double = Robot.DEFAULT_MOTOR_SPEED) {
 
     if (degrees - getAngle() < 0) {
         while (linearOpMode.opModeIsActive() && getAngle() == 0.0) {
-            telemetry.addData("Degrees", "Teget: $degrees, Now: ${getAngle()}")
+            telemetry.addData("Degrees B1", "Teget: $degrees, Now: ${getAngle()}")
             telemetry.update()
         }
         while (linearOpMode.opModeIsActive() && getAngle() > degrees) {
-            telemetry.addData("Degrees", "Teget: $degrees, Now: ${getAngle()}")
-            telemetry.update() }
+            telemetry.addData("Degrees B2", "Teget: $degrees, Now: ${getAngle()}")
+            telemetry.update()
+        }
     } else {
-        while (linearOpMode.opModeIsActive() && getAngle() < degrees) {
-            telemetry.addData("Degrees", "Teget: $degrees, Now: ${getAngle()}")
-            telemetry.update() }
+        if (degrees < 0 && getAngle() < 0) {
+
+        }
+        else {
+            while (linearOpMode.opModeIsActive() && getAngle() < degrees) {
+                telemetry.addData("Degrees B3", "Teget: $degrees, Now: ${getAngle()}")
+                telemetry.update()
+            }
+        }
     }
 
     telemetry.addData("Finished", "rotation")
@@ -119,6 +126,44 @@ fun Robot.rotate(degrees: Double, power: Double = Robot.DEFAULT_MOTOR_SPEED) {
 
     // reset angle tracking on new heading.
     resetAngle()
+}
+
+fun Robot.rotateTo(angle: Double, power: Double = DEFAULT_MOTOR_SPEED) {
+    val offset = 10.0
+
+    val checker = {
+        heading: Double ->
+        when {
+            heading > angle + offset -> "SCAD"
+            heading < angle - offset -> "ADUN"
+            else -> "OK"
+        }
+    }
+
+    var check: String = "NU_OK"
+    var heading = getHeading()
+    while (check != "OK" && opModeIsActive) {
+        when (check) {
+            "SCAD" -> {
+                leftMotor.power = power
+                rightMotor.power = -power
+            }
+            "ADUN" -> {
+                leftMotor.power = -power
+                rightMotor.power = power
+            }
+        }
+
+        telemetry.addData("CE TREBUIE SA FAC", "$check la/din $heading sa ajung la $angle")
+        telemetry.update()
+
+        check = checker(angles.firstAngle.toDouble())
+    }
+}
+
+fun Robot.getHeading(): Double {
+    val angles: Orientation = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
+    return angles.firstAngle.toDouble()
 }
 
 fun Robot.moveByCentimetersOnAngle(centimeters: Double, angle: Double, power: Double = DEFAULT_MOTOR_SPEED) {
@@ -151,10 +196,7 @@ fun Robot.moveByInchesOnAngle(inches: Double, angle: Double, power: Double = DEF
     setMotorsMode(DcMotor.RunMode.RUN_TO_POSITION, leftMotor, rightMotor)
 
     while ((leftMotor.isBusy && rightMotor.isBusy) && linearOpMode.opModeIsActive()) {
-        val rotation = imu
-                .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
-                .firstAngle
-                .toDouble()
+        val rotation = angles.firstAngle.toDouble()
         when {
             leftLimiter(rotation) -> {
                 leftMotor.power = higherPower
@@ -196,7 +238,7 @@ fun Robot.liftLock() {
 fun Robot.dropDown() {
     elapsedTime.reset()
 
-    markerServo.position = 0.5
+    markerServo.position = 0.3
 
     // === LAS USOR IN JOS
     while (elapsedTime.seconds() < 2.8 && opModeIsActive) {
@@ -210,6 +252,7 @@ fun Robot.dropDown() {
 fun Robot.pushLander() {
     elapsedTime.reset()
 
+    markerServo.position = 0.0
     // === MA IMPING IN LANDER
     while (elapsedTime.seconds() < 0.7 && opModeIsActive) {
         leftArm.power = -0.3
@@ -227,12 +270,26 @@ fun Robot.detachHook() {
     }
 }
 
-fun Robot.moveArm() {
+fun Robot.moveArm(time: Double = 0.9) {
     elapsedTime.reset()
-    while (elapsedTime.seconds() < 0.9 && opModeIsActive) {
+    while (elapsedTime.seconds() < time && opModeIsActive) {
         setMotorsPower(0.2, leftArm, rightArm)
     }
     setMotorsPower(0.0, leftArm, rightArm)
+}
+
+fun Robot.parkArm() {
+    elapsedTime.reset()
+    while (elapsedTime.seconds() < 0.7 && opModeIsActive) {
+        setMotorsPower(-0.5, leftArm, rightArm)
+    }
+    setMotorsPower(0.0, leftArm, rightArm)
+}
+
+fun Robot.dropMarker() {
+    markerServo.position = 0.5
+    elapsedTime.reset()
+    while (elapsedTime.seconds() < 0.5 && opModeIsActive) { }
 }
 
 //--------------------------------------------------------------------------------------------------

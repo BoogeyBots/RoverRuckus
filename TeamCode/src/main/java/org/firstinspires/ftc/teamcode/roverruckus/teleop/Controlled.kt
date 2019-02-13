@@ -25,6 +25,7 @@ class Controlled : OpMode() {
     override fun init() {
         robot = Robot(this)
         robot.init()
+        robot.markerServo.position = 0.5
     }
 
     override fun loop() {

@@ -29,7 +29,24 @@ class Crater : LinearOpMode() {
 
         when (goldPos) {
             GoldPos.LEFT -> {
-
+                //m50 - go towards gold
+                robot.moveByCentimetersOnAngle(50.0, -150.0, 0.3)
+                waitForSeconds(0.25)
+                //m-50 - go back
+                robot.moveByCentimetersOnAngle(-50.0, -150.0, 0.3)
+                waitForSeconds(0.25)
+                //r120 - rotate to fix on 90 degrees
+                robot.rotate(-110.0)
+                //m-100 - move to wall
+                robot.moveByCentimetersOnAngle(-150.0, 90.0)
+                //r40 - rotate to fix on 135 degrees
+                robot.rotate(40.0)
+                //m-150 - move to depot
+                robot.moveByCentimetersOnAngle(-140.0, 142.0)
+                //drop marker
+                robot.dropMarker()
+                //m200 - move to crater
+                robot.moveByCentimetersOnAngle(210.0, 140.0)
             }
             GoldPos.MIDDLE -> {
                 robot.moveByCentimetersOnAngle(45.0, 180.0, 0.3)
@@ -43,14 +60,33 @@ class Crater : LinearOpMode() {
                 robot.rotate(40.0, 0.3)
                 // 140 spate 135
                 robot.moveByCentimetersOnAngle(-150.0, 142.5)
+                // drop marker
+                robot.dropMarker()
                 // 195 fata 135
                 robot.moveByCentimetersOnAngle(210.0, 140.0)
             }
             GoldPos.RIGHT -> {
-
+                //m50 - go towards gold
+                robot.moveByCentimetersOnAngle(50.0, 135.0)
+                waitForSeconds(0.25)
+                //m-50 - go back
+                robot.moveByCentimetersOnAngle(-50.0, 135.0)
+                waitForSeconds(0.25)
+                //r60 - rotate to fix on 90 degrees
+                robot.rotate(-40.0, 0.3)
+                //m-150 - move to wall
+                robot.moveByCentimetersOnAngle(-145.0, 90.0)
+                //r40 - rotate to fix on 135 degrees
+                robot.rotate(40.0)
+                //m-150 - move to depot
+                robot.moveByCentimetersOnAngle(-180.0, 142.0)
+                //drop marker
+                robot.dropMarker()
+                //m200 - move to crater
+                robot.moveByCentimetersOnAngle(230.0, 143.0)
             }
         }
-
+        robot.parkArm()
     }
 
     fun initialization() {
@@ -59,7 +95,7 @@ class Crater : LinearOpMode() {
 
         robot.lockServo.position = 0.5
         robot.hookServo.position = 0.5
-        robot.markerServo.position = 0.0
+        robot.markerServo.position = 0.5
 
         robot.initVuforia()
 

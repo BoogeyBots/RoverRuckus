@@ -14,12 +14,79 @@ class Depot : LinearOpMode() {
         initialization()
         waitForStart()
 
-//        robot.liftLock()
-//        robot.dropDown()
-//        robot.pushLander()
-//        robot.detachHook()
-//        robot.rotate(-170.0)
-        robot.moveByCentimetersOnAngle(-150.0, 0.0)
+        robot.liftLock()
+        robot.dropDown()
+        robot.pushLander()
+        robot.detachHook()
+        robot.moveArm(1.1)
+        waitForSeconds(0.5)
+        robot.rotate(-170.0, 0.3)
+
+        val goldPos = robot.recognizeGold()
+
+        when (goldPos) {
+            GoldPos.LEFT -> {
+                //m50 - go towards gold
+                robot.moveByCentimetersOnAngle(50.0, -150.0, 0.3)
+                waitForSeconds(0.25)
+                //m-50 - go back
+                robot.moveByCentimetersOnAngle(-50.0, -150.0, 0.3)
+                waitForSeconds(0.25)
+                //r120 - rotate to fix on 90 degrees
+                robot.rotate(25.0)
+                //m110
+                robot.moveByCentimetersOnAngle(100.0, -90.0)
+                // r45
+                robot.rotate(40.0, 0.3)
+                // 140 spate 135
+                robot.moveByCentimetersOnAngle(-160.0, -32.5)
+                // drop marker
+                robot.dropMarker()
+                // 195 fata 135
+                robot.moveByCentimetersOnAngle(220.0, -40.0)
+            }
+            GoldPos.MIDDLE -> {
+                //m45
+                robot.moveByCentimetersOnAngle(45.0, 180.0, 0.3)
+                waitForSeconds(0.5)
+                //m-35
+                robot.moveByCentimetersOnAngle(-35.0, 180.0, 0.3)
+                waitForSeconds(0.5)
+                //r80
+                robot.rotate(80.0, 0.3)
+                //m110
+                robot.moveByCentimetersOnAngle(100.0, -90.0)
+                // r45
+                robot.rotate(40.0, 0.3)
+                // 140 spate 135
+                robot.moveByCentimetersOnAngle(-160.0, -32.5)
+                // drop marker
+                robot.dropMarker()
+                // 195 fata 135
+                robot.moveByCentimetersOnAngle(220.0, -40.0)
+            }
+            GoldPos.RIGHT -> {
+                //m50 - go towards gold
+                robot.moveByCentimetersOnAngle(50.0, 135.0)
+                waitForSeconds(0.25)
+                //m-50 - go back
+                robot.moveByCentimetersOnAngle(-50.0, 135.0)
+                waitForSeconds(0.25)
+                //r60 - rotate to fix on 90 degrees
+                robot.rotate(-240.0, 0.3)
+                //m-150 - move to wall
+                robot.moveByCentimetersOnAngle(105.0, -90.0)
+                //r40 - rotate to fix on 135 degrees
+                robot.rotate(45.0)
+                //m-150 - move to depot
+                robot.moveByCentimetersOnAngle(-180.0, -32.5)
+                //drop marker
+                robot.dropMarker()
+                //m200 - move to crater
+                robot.moveByCentimetersOnAngle(250.0, -40.0)
+            }
+        }
+        robot.parkArm()
     }
 
     fun initialization() {
@@ -28,7 +95,7 @@ class Depot : LinearOpMode() {
 
         robot.lockServo.position = 0.5
         robot.hookServo.position = 0.5
-        robot.markerServo.position = 0.0
+        robot.markerServo.position = 0.5
 
         robot.initVuforia()
 
