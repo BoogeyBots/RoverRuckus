@@ -46,10 +46,6 @@ class AutoDepot : LinearOpMode() {
 
         hardware.lockServoPos = 0.5
         hardware.hookServoPos = 0.5
-        hardware.leftIntakeServoPos = 0.17
-        hardware.rightIntakeServoPos = 0.83
-        hardware.scoopServoPos = 1.0
-        telemetry.addData("Servo intake", "L: ${hardware.leftIntakeServoPos}, R: ${hardware.rightIntakeServoPos}")
 
         val imuParams = BNO055IMU.Parameters()
         imuParams.angleUnit = BNO055IMU.AngleUnit.DEGREES
@@ -90,6 +86,15 @@ class AutoDepot : LinearOpMode() {
         waitForSeconds(0.5)
 
         detachHook()
+
+        elapsedTime.reset()
+        while (elapsedTime.seconds() < 0.9 && opModeIsActive()) {
+            hardware.leftArmPower = 0.2
+            hardware.rightArmPower = 0.2
+        }
+        hardware.leftArmPower = 0.0
+        hardware.rightArmPower = 0.0
+
 
         // ROTATE 180 DEGREES
         rotate(-165.0, 0.34)
@@ -205,8 +210,7 @@ class AutoDepot : LinearOpMode() {
 
         elapsedTime.reset()
         while (elapsedTime.seconds() < 0.5 && opModeIsActive()) {
-            hardware.leftIntakeServoPos = 0.32
-            hardware.rightIntakeServoPos = 0.68
+
         }
 
         // ===================================
@@ -266,17 +270,12 @@ class AutoDepot : LinearOpMode() {
     private fun liftIntake() {
         elapsedTime.reset()
         while (elapsedTime.seconds() < 0.4 && opModeIsActive()) {
-            hardware.leftIntakeServoPos = Range.clip(hardware.leftIntakeServoPos + 0.02, 0.0, 0.38)
-            hardware.rightIntakeServoPos = Range.clip(hardware.rightIntakeServoPos - 0.02, 0.62, 1.0)
         }
     }
 
     private fun dropTeamMarker() {
         elapsedTime.reset()
         while (elapsedTime.seconds() < 1.0 && opModeIsActive()) {
-            hardware.leftIntakeServoPos = Range.clip(hardware.leftIntakeServoPos - 0.02, 0.0, 0.38)
-            hardware.rightIntakeServoPos = Range.clip(hardware.rightIntakeServoPos + 0.02, 0.62, 1.0)
-            hardware.scoopServoPos = Range.clip(hardware.scoopServoPos - 0.02, 0.45, 1.0)
         }
     }
 

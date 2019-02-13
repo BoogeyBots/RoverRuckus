@@ -17,14 +17,10 @@ import android.media.MediaPlayer
 class RoverRuckus : OpMode() {
     private val hardware = RoverRuckusHardware()
 
-    private var scoopOffset = 0.0
     private var hookOffset = 0.0
     private val hookSpeed = 0.02
     private val lockSpeed = 0.01
     private var lockOffset = 0.0
-    private var leftIntakeOffset = 0.0
-    private var rightIntakeOffset = 0.0
-    private val intakeSpeed = 0.01
     private val minSpeed = 0.3
     private val maxSpeed = 0.65
     private var currentSpeed = 0.65
@@ -81,13 +77,6 @@ class RoverRuckus : OpMode() {
         hardware.leftArmPower = Range.clip(armMovement, -0.6, 0.6)
         hardware.rightArmPower = Range.clip(armMovement, -0.6, 0.6)
 
-        ///=== SCOOP ===
-
-        scoopOffset += (gamepad2.left_trigger.toDouble() - gamepad2.right_trigger.toDouble())
-        scoopOffset = Range.clip(scoopOffset, -0.05, 0.5)
-
-        hardware.scoopServoPos = Range.clip(0.5 + scoopOffset, 0.0, 1.0)
-
         ///=== HOOK ===
 
         hookOffset += ((if (gamepad2.left_bumper) hookSpeed else 0.0) - (if (gamepad2.right_bumper) hookSpeed else 0.0))
@@ -95,23 +84,11 @@ class RoverRuckus : OpMode() {
 
         hardware.hookServoPos = Range.clip(0.5 + hookOffset, 0.5, 1.0)
 
-        ///=== INTAKE ==
-
-        leftIntakeOffset += (-gamepad2.right_stick_y) * intakeSpeed
-        rightIntakeOffset += gamepad2.right_stick_y * intakeSpeed
-        leftIntakeOffset = Range.clip(leftIntakeOffset, -0.5, 0.0)
-        rightIntakeOffset = Range.clip(rightIntakeOffset, 0.0, 0.5)
-
-        hardware.leftIntakeServoPos = Range.clip(0.5 + leftIntakeOffset, 0.0,0.38)
-        hardware.rightIntakeServoPos = Range.clip(0.5 + rightIntakeOffset, 0.62,1.0)
-
         telemetry.addData("MOVEMENT:", "Throttle: $throttle | Brake: $brake | Left-Right: $horizontalMovement")
         telemetry.addData("ARM:", "Movement: $armMovement")
         telemetry.addData("Current speed", currentSpeed)
         telemetry.addData("Hook pos", hardware.hookServoPos)
         telemetry.addData("Hook", hardware.hookServoPos)
-        telemetry.addData("Intake", "L: ${hardware.leftIntakeServoPos}; R: ${hardware.rightIntakeServoPos}")
-        telemetry.addData("Scoop", hardware.scoopServoPos)
     }
 
     override fun stop() {

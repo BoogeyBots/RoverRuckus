@@ -14,10 +14,6 @@ class RoverRuckusHardware {
     private lateinit var leftArm: DcMotor
     private lateinit var rightArm: DcMotor
 
-    private lateinit var leftIntakeServo: Servo
-    private lateinit var rightIntakeServo: Servo
-    private lateinit var scoopServo: Servo
-
     private lateinit var hookServo: Servo
     private lateinit var lockServo: Servo
 
@@ -56,16 +52,6 @@ class RoverRuckusHardware {
             }
         }
 
-
-
-    var scoopServoPos: Double = 0.0
-        set(value) {
-            if (value != field) {
-                field = value
-                scoopServo.position = field
-            }
-        }
-
     var hookServoPos: Double = 0.0
         set(value) {
             if (value != field) {
@@ -82,21 +68,6 @@ class RoverRuckusHardware {
             }
         }
 
-    var leftIntakeServoPos: Double = 0.0
-        set(value) {
-            if (value != field) {
-                field = value
-                leftIntakeServo.position = field
-            }
-        }
-    var rightIntakeServoPos: Double = 0.0
-        set(value) {
-            if (value != field) {
-                field = value
-                rightIntakeServo.position = field
-            }
-        }
-
     fun init(hardwareMap: HardwareMap){
         leftMotor = hardwareMap.get(DcMotor::class.java, "l_mov")
         rightMotor = hardwareMap.get(DcMotor::class.java, "r_mov")
@@ -105,6 +76,8 @@ class RoverRuckusHardware {
         rightMotor.direction = DcMotorSimple.Direction.FORWARD
         leftMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         rightMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        leftMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        rightMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         leftArm = hardwareMap.get(DcMotor::class.java, "l_arm")
         rightArm = hardwareMap.get(DcMotor::class.java, "r_arm")
@@ -113,11 +86,6 @@ class RoverRuckusHardware {
         rightArm.direction = DcMotorSimple.Direction.REVERSE
         leftArm.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         rightArm.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        
-
-        leftIntakeServo = hardwareMap.get(Servo::class.java, "l_int")
-        rightIntakeServo = hardwareMap.get(Servo::class.java, "r_int")
-        scoopServo = hardwareMap.get(Servo::class.java, "scoop")
 
         hookServo = hardwareMap.get(Servo::class.java, "hook")
         lockServo = hardwareMap.get(Servo::class.java, "lock")
