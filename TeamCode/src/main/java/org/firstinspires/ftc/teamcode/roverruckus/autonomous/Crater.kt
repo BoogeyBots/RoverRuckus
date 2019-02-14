@@ -30,10 +30,10 @@ class Crater : LinearOpMode() {
         when (goldPos) {
             GoldPos.LEFT -> {
                 //m50 - go towards gold
-                robot.moveByCentimetersOnAngle(50.0, -150.0, 0.3)
+                robot.moveByCentimetersOnAngle(50.0, -136.0, 0.3)
                 waitForSeconds(0.25)
                 //m-50 - go back
-                robot.moveByCentimetersOnAngle(-50.0, -150.0, 0.3)
+                robot.moveByCentimetersOnAngle(-50.0, -136.0, 0.3)
                 waitForSeconds(0.25)
                 //r120 - rotate to fix on 90 degrees
                 robot.rotate(-110.0)
@@ -42,11 +42,20 @@ class Crater : LinearOpMode() {
                 //r40 - rotate to fix on 135 degrees
                 robot.rotate(40.0)
                 //m-150 - move to depot
-                robot.moveByCentimetersOnAngle(-140.0, 142.0)
+                robot.moveByCentimetersOnAngle(-80.0, 142.0)
+                robot.moveByCentimetersOnAngle(-80.0, 148.0)
+
+                // daca te-ai strambat mai mult de 20 de grade
+                if (robot.angles.firstAngle > 150.0) {
+                    robot.rotateTo(135.0)
+                }
+                // fa-te la loc
+
                 //drop marker
                 robot.dropMarker()
                 //m200 - move to crater
-                robot.moveByCentimetersOnAngle(210.0, 140.0)
+                robot.moveByCentimetersOnAngle(115.0, 140.0)
+                robot.moveByCentimetersOnAngle(115.0, 146.0)
             }
             GoldPos.MIDDLE -> {
                 robot.moveByCentimetersOnAngle(45.0, 180.0, 0.3)
@@ -59,11 +68,12 @@ class Crater : LinearOpMode() {
                 // rotit 45
                 robot.rotate(40.0, 0.3)
                 // 140 spate 135
-                robot.moveByCentimetersOnAngle(-150.0, 142.5)
+                robot.moveByCentimetersOnAngle(-150.0, 145.0)
                 // drop marker
                 robot.dropMarker()
                 // 195 fata 135
-                robot.moveByCentimetersOnAngle(210.0, 140.0)
+                robot.moveByCentimetersOnAngle(105.0, 142.0)
+                robot.moveByCentimetersOnAngle(105.0, 145.5)
             }
             GoldPos.RIGHT -> {
                 //m50 - go towards gold

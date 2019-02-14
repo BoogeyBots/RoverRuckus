@@ -15,9 +15,6 @@ class Controlled : OpMode() {
     private val hookSpeed = 0.02
     private val lockSpeed = 0.01
     private var lockOffset = 0.0
-    private var leftIntakeOffset = 0.0
-    private var rightIntakeOffset = 0.0
-    private val intakeSpeed = 0.01
     private val minSpeed = 0.3
     private val maxSpeed = 0.65
     private var currentSpeed = 0.65
@@ -83,12 +80,6 @@ class Controlled : OpMode() {
 
         robot.hookServo.position = Range.clip(0.5 + hookOffset, 0.5, 1.0)
 
-        ///=== INTAKE ==
-
-        leftIntakeOffset += (-gamepad2.right_stick_y) * intakeSpeed
-        rightIntakeOffset += gamepad2.right_stick_y * intakeSpeed
-        leftIntakeOffset = Range.clip(leftIntakeOffset, -0.5, 0.0)
-        rightIntakeOffset = Range.clip(rightIntakeOffset, 0.0, 0.5)
 
         telemetry.addData("MOVEMENT:", "Throttle: $throttle | Brake: $brake | Left-Right: $horizontalMovement")
         telemetry.addData("ARM:", "Movement: $armMovement")
