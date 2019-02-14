@@ -81,14 +81,12 @@ class AutoDepot : LinearOpMode() {
 
         goTowardsLanderToLiftHook()
 
-        moveLock()
-
         waitForSeconds(0.5)
 
         detachHook()
 
         elapsedTime.reset()
-        while (elapsedTime.seconds() < 0.9 && opModeIsActive()) {
+        while (elapsedTime.seconds() < 1.0 && opModeIsActive()) {
             hardware.leftArmPower = 0.2
             hardware.rightArmPower = 0.2
         }
