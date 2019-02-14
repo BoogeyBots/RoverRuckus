@@ -46,10 +46,10 @@ class Crater : LinearOpMode() {
                 robot.moveByCentimetersOnAngle(-80.0, 148.0)
 
                 // daca te-ai strambat mai mult de 20 de grade
-                if (robot.angles.firstAngle > 150.0) {
-                    robot.rotateTo(135.0)
-                }
-                // fa-te la loc
+//                if (robot.angles.firstAngle > 150.0) {
+//                    robot.rotateTo(135.0)
+//                }
+//                // fa-te la loc
 
                 //drop marker
                 robot.dropMarker()
@@ -64,7 +64,7 @@ class Crater : LinearOpMode() {
                 waitForSeconds(0.5)
                 robot.rotate(-80.0, 0.3)
                 // 120 spate 90
-                robot.moveByCentimetersOnAngle(-135.0, 90.0)
+                robot.moveByCentimetersOnAngle(-142.0, 90.0)
                 // rotit 45
                 robot.rotate(40.0, 0.3)
                 // 140 spate 135
@@ -89,7 +89,8 @@ class Crater : LinearOpMode() {
                 //r40 - rotate to fix on 135 degrees
                 robot.rotate(40.0)
                 //m-150 - move to depot
-                robot.moveByCentimetersOnAngle(-180.0, 142.0)
+                robot.moveByCentimetersOnAngle(-90.0, 142.0)
+                robot.moveByCentimeters(-90.0)
                 //drop marker
                 robot.dropMarker()
                 //m200 - move to crater

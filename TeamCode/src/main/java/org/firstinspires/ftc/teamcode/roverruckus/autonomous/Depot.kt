@@ -39,7 +39,7 @@ class Depot : LinearOpMode() {
                 // r45
                 robot.rotate(40.0, 0.3)
                 // 140 spate 135
-                robot.moveByCentimetersOnAngle(-160.0, -32.5)
+                robot.moveByCentimetersOnAngle(-160.0, -37.5)
                 // drop marker
                 robot.dropMarker()
                 // 195 fata 135
