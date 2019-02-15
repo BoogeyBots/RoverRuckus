@@ -27,10 +27,10 @@ class Depot : LinearOpMode() {
         when (goldPos) {
             GoldPos.LEFT -> {
                 //m50 - go towards gold
-                robot.moveByCentimetersOnAngle(50.0, -150.0, 0.3)
+                robot.moveByCentimetersOnAngle(50.0, -140.0, 0.3)
                 waitForSeconds(0.25)
                 //m-50 - go back
-                robot.moveByCentimetersOnAngle(-50.0, -150.0, 0.3)
+                robot.moveByCentimetersOnAngle(-50.0, -140.0, 0.3)
                 waitForSeconds(0.25)
                 //r120 - rotate to fix on 90 degrees
                 robot.rotate(25.0)
@@ -39,51 +39,64 @@ class Depot : LinearOpMode() {
                 // r45
                 robot.rotate(40.0, 0.3)
                 // 140 spate 135
-                robot.moveByCentimetersOnAngle(-160.0, -37.5)
+                //robot.moveByCentimetersOnAngle(-200.0, -40.0)
+                robot.moveForSeconds(2.3, -41.0, power = -Robot.DEFAULT_MOTOR_SPEED)
                 // drop marker
                 robot.dropMarker()
+                waitForSeconds(0.5)
                 // 195 fata 135
-                robot.moveByCentimetersOnAngle(220.0, -40.0)
+                robot.moveForSeconds(2.3, -41.0)
+                //robot.moveByCentimetersOnAngle(220.0, -40.0)
             }
             GoldPos.MIDDLE -> {
                 //m45
                 robot.moveByCentimetersOnAngle(45.0, 180.0, 0.3)
                 waitForSeconds(0.5)
                 //m-35
-                robot.moveByCentimetersOnAngle(-35.0, 180.0, 0.3)
+                robot.moveByCentimetersOnAngle(-42.5, 180.0, 0.3)
                 waitForSeconds(0.5)
                 //r80
                 robot.rotate(80.0, 0.3)
                 //m110
-                robot.moveByCentimetersOnAngle(100.0, -90.0)
+                robot.moveByCentimetersOnAngle(110.0, -90.0)
                 // r45
                 robot.rotate(40.0, 0.3)
                 // 140 spate 135
-                robot.moveByCentimetersOnAngle(-160.0, -32.5)
+                //robot.moveByCentimetersOnAngle(-160.0, -40.5)
+                //robot.moveByCentimeters(-25.0)
+                robot.moveForSeconds(2.0, -35.0, -Robot.DEFAULT_MOTOR_SPEED)
                 // drop marker
                 robot.dropMarker()
+                waitForSeconds(0.5)
                 // 195 fata 135
-                robot.moveByCentimetersOnAngle(220.0, -40.0)
+//                robot.moveByCentimetersOnAngle(220.0, -42.0)
+                robot.moveForSeconds(2.3, -45.0)
             }
             GoldPos.RIGHT -> {
                 //m50 - go towards gold
-                robot.moveByCentimetersOnAngle(50.0, 135.0)
+//                robot.moveByCentimetersOnAngle(50.0, 130.0)
+                robot.moveForSeconds(0.5, 135.0)
                 waitForSeconds(0.25)
                 //m-50 - go back
-                robot.moveByCentimetersOnAngle(-50.0, 135.0)
+//                robot.moveByCentimetersOnAngle(-55.0, 130.0)
+                robot.moveForSeconds(0.6, 135.0, -0.4)
                 waitForSeconds(0.25)
                 //r60 - rotate to fix on 90 degrees
-                robot.rotate(-240.0, 0.3)
+                robot.rotate(-190.0, 0.3)
                 //m-150 - move to wall
-                robot.moveByCentimetersOnAngle(105.0, -90.0)
+                //robot.moveByCentimetersOnAngle(120.0, -87.0)
+                robot.moveForSeconds(1.0, 90.0)
                 //r40 - rotate to fix on 135 degrees
                 robot.rotate(45.0)
                 //m-150 - move to depot
-                robot.moveByCentimetersOnAngle(-180.0, -32.5)
+                //robot.moveByCentimetersOnAngle(-180.0, -32.5)
+                robot.moveForSeconds(1.85, -37.0, -Robot.DEFAULT_MOTOR_SPEED)
                 //drop marker
                 robot.dropMarker()
+                waitForSeconds(0.5)
                 //m200 - move to crater
-                robot.moveByCentimetersOnAngle(250.0, -40.0)
+                //robot.moveByCentimetersOnAngle(250.0, -40.0)
+                robot.moveForSeconds(2.1, -41.0)
             }
         }
         robot.parkArm()

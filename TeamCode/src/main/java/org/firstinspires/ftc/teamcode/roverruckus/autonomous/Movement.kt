@@ -221,6 +221,47 @@ fun Robot.moveByInchesOnAngle(inches: Double, angle: Double, power: Double = DEF
     setMotorsMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER, leftMotor, rightMotor)
 }
 
+fun Robot.moveForSeconds(time: Double, angle: Double, power: Double = DEFAULT_MOTOR_SPEED) {
+    setMotorsMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER, leftMotor, rightMotor)
+
+    elapsedTime.reset()
+    val leftLimiter: (Double) -> Boolean
+    val rightLimiter: (Double) -> Boolean
+    val higherPower = power + 0.25
+    val lowerPower = power - 0.25
+    if (angle == 180.0) {
+        leftLimiter = { rotation -> rotation < 0 && rotation > -177.5 }
+        rightLimiter = { rotation -> rotation > 0 && rotation < 177.5 }
+    } else {
+        leftLimiter = { rotation -> rotation > angle + 2.5 }
+        rightLimiter = { rotation -> rotation < angle - 2.5 }
+    }
+    while (elapsedTime.seconds() < time && opModeIsActive) {
+        val rotation = imu
+                .getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES)
+                .firstAngle
+                .toDouble()
+        when {
+            leftLimiter(rotation) -> {
+                leftMotor.power = higherPower
+                rightMotor.power = lowerPower
+            }
+            rightLimiter(rotation) -> {
+                leftMotor.power = lowerPower
+                rightMotor.power = higherPower
+            }
+            else -> {
+                leftMotor.power = power
+                rightMotor.power = power
+            }
+        }
+        if (power < 0.0) { telemetry.addData("Move", "Backwards") }
+        telemetry.addData("Movement", "LM: ${leftMotor.power}; RM: ${rightMotor.power}")
+        telemetry.update()
+    }
+
+    setMotorsPower(0.0, leftMotor, rightMotor)
+}
 fun Robot.liftLock() {
     elapsedTime.reset()
 
