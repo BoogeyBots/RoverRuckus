@@ -11,8 +11,8 @@ class RoverRuckusHardware {
     private lateinit var leftMotor: DcMotor
     private lateinit var rightMotor: DcMotor
 
-    private lateinit var leftArm: DcMotor
-    private lateinit var rightArm: DcMotor
+    lateinit var leftArm: DcMotor
+    lateinit var rightArm: DcMotor
 
     private lateinit var hookServo: Servo
     private lateinit var lockServo: Servo

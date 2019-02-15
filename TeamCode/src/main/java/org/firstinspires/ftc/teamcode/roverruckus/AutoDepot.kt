@@ -247,11 +247,23 @@ class AutoDepot : LinearOpMode() {
             }
         }
 
+        parkArm()
+
         /*
         * ==============
         * ==== STOP ====
         * ==============
         * */
+    }
+
+    private fun parkArm() {
+        elapsedTime.reset()
+        while (elapsedTime.seconds() < 1.1 && opModeIsActive()) {
+            hardware.leftArm.power = -0.4
+            hardware.rightArm.power = -0.4
+        }
+        hardware.leftArm.power = 0.0
+        hardware.rightArm.power = 0.0
     }
 
     private fun liftArm() {
