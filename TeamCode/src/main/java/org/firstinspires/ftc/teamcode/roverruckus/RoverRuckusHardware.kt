@@ -17,6 +17,8 @@ class RoverRuckusHardware {
     private lateinit var hookServo: Servo
     private lateinit var lockServo: Servo
 
+    lateinit var markerServo: Servo
+
     var leftArmPower: Double = 0.0
         set(value) {
             if (value != field) {
@@ -89,5 +91,7 @@ class RoverRuckusHardware {
 
         hookServo = hardwareMap.get(Servo::class.java, "hook")
         lockServo = hardwareMap.get(Servo::class.java, "lock")
+
+        markerServo = hardwareMap.get(Servo::class.java, "marker")
     }
 }

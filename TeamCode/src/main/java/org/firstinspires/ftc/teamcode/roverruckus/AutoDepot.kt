@@ -46,6 +46,7 @@ class AutoDepot : LinearOpMode() {
 
         hardware.lockServoPos = 0.5
         hardware.hookServoPos = 0.5
+        hardware.markerServo.position = 0.5
 
         val imuParams = BNO055IMU.Parameters()
         imuParams.angleUnit = BNO055IMU.AngleUnit.DEGREES
@@ -57,6 +58,14 @@ class AutoDepot : LinearOpMode() {
 
         imu = hardwareMap.get(BNO055IMU::class.java, "imu")
         imu.initialize(imuParams)
+
+        initVuforia()
+
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            initTfod()
+        } else {
+            telemetry.addData("Sorry!", "This device is not compatible with TFOD")
+        }
 
         telemetry.addData("INIT", "over!")
         telemetry.update()
@@ -101,15 +110,7 @@ class AutoDepot : LinearOpMode() {
 
         liftArm()
 
-        initVuforia()
-
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            initTfod()
-        } else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD")
-        }
         CameraDevice.getInstance().setFlashTorchMode(true);
-
 
         goForward(time=0.2, power=0.3)
 
@@ -193,12 +194,10 @@ class AutoDepot : LinearOpMode() {
                 goForwardOnAngle(time = 0.5, power=0.45, angle=-145.0)
             }
             2 -> {
-                goForwardOnAngle(time = 1.3, power = 0.45, angle = 180.0)
-                rotate(47.0, power = 0.34)
-                goForwardOnAngle(time = 0.24, power = 0.65, angle = 135.0)
+                goForwardOnAngle(time = 0.5, power = 0.45, angle = 180.0)
             }
             3 -> {
-                goForwardOnAngle(time = 0.9, power = 0.45, angle = 145.0)
+                goForwardOnAngle(time = 0.6, power = 0.45, angle = 145.0)
             }
         }
 
@@ -226,24 +225,24 @@ class AutoDepot : LinearOpMode() {
                 letDownArm()
             }
             2 -> {
-                rotate(degrees = 70.0, power = 0.34)
+                goForwardOnAngle(time = 0.5, power = -0.45, angle = 145.0)
+                rotate(82.0, 0.34)
+                goForwardOnAngle(0.8, 0.55, -90.0)
+                rotate(34.0, 0.34)
+                goForwardOnAngle(2.1, -0.5, -41.0)
                 dropTeamMarker()
-                letDownArm()
-                goForwardOnAngle(time = 0.6, power = 0.6, angle = -45.0)
-                liftIntake()
-                goForwardOnAngle(time = 0.7, power = 0.55, angle = -36.0)
-                goForwardOnAngle(time = 0.65, power = 0.55, angle = -40.0)
+                waitForSeconds(0.34)
+                goForwardOnAngle(1.3, 0.65, -41.0)
             }
             3 -> {
-                rotate(degrees = -80.0, power = 0.34)
-                goForwardOnAngle(time = 1.27, power = -0.55, angle = 45.0)
-                rotate(-80.0, power = 0.34)
+                goForwardOnAngle(time = 0.8, power = -0.45, angle = 145.0)
+                rotate(132.0, 0.34)
+                goForwardOnAngle(0.9, 0.55, -90.0)
+                rotate(34.0, 0.34)
+                goForwardOnAngle(2.1, -0.5, -41.0)
                 dropTeamMarker()
-                letDownArm()
-                goForwardOnAngle(time = 0.6, power = 0.50, angle = -40.0)
-                liftIntake()
-                goForwardOnAngle(time = 0.75, power = 0.50, angle = -37.0)
-                goForwardOnAngle(time = 0.65, power = 0.50, angle = -42.0)
+                waitForSeconds(0.34)
+                goForwardOnAngle(1.3, 0.65, -41.0)
             }
         }
 
@@ -284,6 +283,7 @@ class AutoDepot : LinearOpMode() {
     }
 
     private fun dropTeamMarker() {
+        hardware.markerServo.position = 0.5
         elapsedTime.reset()
         while (elapsedTime.seconds() < 1.0 && opModeIsActive()) {
         }
@@ -348,10 +348,12 @@ class AutoDepot : LinearOpMode() {
     }
 
     private fun pushLander() {
+        hardware.markerServo.position = 0.0
+
         elapsedTime.reset()
 
         // === MA IMPING IN LANDER
-        while (elapsedTime.seconds() < 0.7 && opModeIsActive()) {
+        while (elapsedTime.seconds() < 0.5 && opModeIsActive()) {
             hardware.leftArmPower = -0.3
             hardware.rightArmPower = -0.3
         }
@@ -361,6 +363,8 @@ class AutoDepot : LinearOpMode() {
     }
 
     private fun dropDown() {
+        hardware.markerServo.position = 0.3
+
         elapsedTime.reset()
 
         // === LAS USOR IN JOS

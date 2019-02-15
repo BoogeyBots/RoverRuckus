@@ -46,6 +46,7 @@ class AutoCrater : LinearOpMode() {
 
         hardware.lockServoPos = 0.5
         hardware.hookServoPos = 0.5
+        hardware.markerServo.position = 0.5
 
         val imuParams = BNO055IMU.Parameters()
         imuParams.angleUnit = BNO055IMU.AngleUnit.DEGREES
@@ -199,12 +200,12 @@ class AutoCrater : LinearOpMode() {
                 waitForSeconds(0.2)
                 rotate(degrees = 45.0, power = 0.34)
 
-                goForwardOnAngle(time = 1.52, power = -0.45, angle = 145.0)
+                goForwardOnAngle(time = 1.75, power = -0.45, angle = 145.0)
                 dropTeamMarker()
                 waitForSeconds(0.5)
                 goForwardOnAngle(time = 0.1, power = 0.6, angle = 142.0)
                 goForwardOnAngle(time = 0.8, power = 0.8, angle = 142.0)
-                goForwardOnAngle(time = 0.6, power = 0.6, angle = 145.0)
+                goForwardOnAngle(time = 0.4, power = 0.6, angle = 145.0)
                 letDownArm()
             }
             2 -> {
@@ -212,24 +213,24 @@ class AutoCrater : LinearOpMode() {
                 waitForSeconds(0.65)
                 goForwardOnAngle(time = 0.72, power = -0.45, angle = 180.0)
                 rotate(degrees = -90.0, power = 0.34)
-                goForwardOnAngle(time = 1.55, power = -0.45, angle = 90.0)
+                goForwardOnAngle(time = 1.75, power = -0.45, angle = 90.0)
 
                 // ============================
                 waitForSeconds(0.2)
                 rotate(degrees = 45.0, power = 0.34)
 
-                goForwardOnAngle(time = 1.55, power = -0.45, angle = 143.0)
+                goForwardOnAngle(time = 1.9, power = -0.45, angle = 143.0)
                 dropTeamMarker()
                 waitForSeconds(0.5)
                 goForwardOnAngle(time = 0.2, power = 0.8, angle = 142.0)
                 goForwardOnAngle(time = 0.6, power = 0.8, angle = 142.0)
-                goForwardOnAngle(time = 0.55, power = 0.6, angle = 147.0)
+                goForwardOnAngle(time = 0.35, power = 0.6, angle = 147.0)
                 letDownArm()
             }
             3 -> {
-                goForwardOnAngle(time = 0.7, power = 0.45, angle = 145.0)
+                goForwardOnAngle(time = 0.55, power = 0.45, angle = 145.0)
                 waitForSeconds(0.75)
-                goForwardOnAngle(time = 0.72, power = -0.45, angle = 147.0)
+                goForwardOnAngle(time = 0.6, power = -0.45, angle = 147.0)
                 rotate(degrees = -55.0, power = 0.34)
                 goForwardOnAngle(time = 2.0, power = -0.4, angle = 90.0)
 
@@ -237,7 +238,7 @@ class AutoCrater : LinearOpMode() {
                 waitForSeconds(0.2)
                 rotate(degrees = 45.0, power = 0.34)
 
-                goForwardOnAngle(time = 1.4, power = -0.48, angle = 145.0)
+                goForwardOnAngle(time = 1.5, power = -0.55, angle = 145.0)
                 dropTeamMarker()
                 waitForSeconds(0.5)
                 goForwardOnAngle(time = 0.1, power = 0.7, angle = 142.0)
@@ -246,6 +247,18 @@ class AutoCrater : LinearOpMode() {
                 letDownArm()
             }
         }
+
+        parkArm()
+    }
+
+    private fun parkArm() {
+        elapsedTime.reset()
+        while (elapsedTime.seconds() < 1.1 && opModeIsActive()) {
+            hardware.leftArm.power = -0.4
+            hardware.rightArm.power = -0.4
+        }
+        hardware.leftArm.power = 0.0
+        hardware.rightArm.power = 0.0
     }
 
     private fun dropTeamMarker() {
@@ -313,6 +326,8 @@ class AutoCrater : LinearOpMode() {
     }
 
     private fun pushLander() {
+        hardware.markerServo.position = 0.0
+
         elapsedTime.reset()
 
         // === MA IMPING IN LANDER
@@ -326,6 +341,9 @@ class AutoCrater : LinearOpMode() {
     }
 
     private fun dropDown() {
+        hardware.markerServo.position = 0.3
+
+
         elapsedTime.reset()
 
         // === LAS USOR IN JOS
