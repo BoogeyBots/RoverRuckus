@@ -63,6 +63,14 @@ class AutoCrater : LinearOpMode() {
 //        mediaPlayer.setVolume(1.0f, 1.0f)
 //        mediaPlayer.start()
 
+        initVuforia()
+
+        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+            initTfod()
+        } else {
+            telemetry.addData("Sorry!", "This device is not compatible with TFOD")
+        }
+
         telemetry.addData("INIT", "over!")
         telemetry.update()
 
@@ -103,13 +111,7 @@ class AutoCrater : LinearOpMode() {
 
         waitForSeconds(0.25)
 
-        initVuforia()
 
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-            initTfod()
-        } else {
-            telemetry.addData("Sorry!", "This device is not compatible with TFOD")
-        }
 
         CameraDevice.getInstance().setFlashTorchMode(true);
 
@@ -194,15 +196,15 @@ class AutoCrater : LinearOpMode() {
                 waitForSeconds(0.75)
                 goForwardOnAngle(time = 0.65, power=-0.45, angle=-135.0)
                 rotate(degrees = -(180.0 - 55.0), power = 0.34)
-                goForwardOnAngle(time = 1.65, power = -0.35, angle = 90.0)
+                goForwardOnAngle(time = 1.65, power = -0.45, angle = 90.0)
 
                 // ============================
                 waitForSeconds(0.2)
                 rotate(degrees = 45.0, power = 0.34)
 
-                goForwardOnAngle(time = 1.75, power = -0.45, angle = 145.0)
+                goForwardOnAngle(time = 1.75, power = -0.55, angle = 145.0)
                 dropTeamMarker()
-                waitForSeconds(0.5)
+                waitForSeconds(0.75)
                 goForwardOnAngle(time = 0.1, power = 0.6, angle = 142.0)
                 goForwardOnAngle(time = 0.8, power = 0.8, angle = 142.0)
                 goForwardOnAngle(time = 0.4, power = 0.6, angle = 145.0)
@@ -224,26 +226,26 @@ class AutoCrater : LinearOpMode() {
                 waitForSeconds(0.5)
                 goForwardOnAngle(time = 0.2, power = 0.8, angle = 142.0)
                 goForwardOnAngle(time = 0.6, power = 0.8, angle = 142.0)
-                goForwardOnAngle(time = 0.35, power = 0.6, angle = 147.0)
+                goForwardOnAngle(time = 0.45, power = 0.6, angle = 147.0)
                 letDownArm()
             }
             3 -> {
                 goForwardOnAngle(time = 0.55, power = 0.45, angle = 145.0)
                 waitForSeconds(0.75)
-                goForwardOnAngle(time = 0.6, power = -0.45, angle = 147.0)
-                rotate(degrees = -55.0, power = 0.34)
+                goForwardOnAngle(time = 0.7, power = -0.45, angle = 147.0)
+                rotate(degrees = -53.0, power = 0.34)
                 goForwardOnAngle(time = 2.0, power = -0.4, angle = 90.0)
 
                 // ============================
                 waitForSeconds(0.2)
                 rotate(degrees = 45.0, power = 0.34)
 
-                goForwardOnAngle(time = 1.5, power = -0.55, angle = 145.0)
+                goForwardOnAngle(time = 1.8, power = -0.55, angle = 148.0)
                 dropTeamMarker()
                 waitForSeconds(0.5)
                 goForwardOnAngle(time = 0.1, power = 0.7, angle = 142.0)
                 goForwardOnAngle(time = 0.7, power = 0.7, angle = 142.0)
-                goForwardOnAngle(time = 0.47, power = 0.55, angle = 149.0)
+                goForwardOnAngle(time = 0.7, power = 0.55, angle = 149.0)
                 letDownArm()
             }
         }
@@ -262,6 +264,7 @@ class AutoCrater : LinearOpMode() {
     }
 
     private fun dropTeamMarker() {
+        hardware.markerServo.position = 0.5
         elapsedTime.reset()
         while (elapsedTime.seconds() < 1.0 && opModeIsActive()) {
 
@@ -539,6 +542,7 @@ class AutoCrater : LinearOpMode() {
         val tfodMonitorViewId = hardwareMap.appContext.resources.getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.packageName)
         val tfodParameters = TFObjectDetector.Parameters(tfodMonitorViewId)
+        tfodParameters.minimumConfidence = 0.75
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia)
         tfod?.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL)
     }

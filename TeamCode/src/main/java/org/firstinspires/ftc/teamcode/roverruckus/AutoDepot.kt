@@ -225,7 +225,7 @@ class AutoDepot : LinearOpMode() {
                 letDownArm()
             }
             2 -> {
-                goForwardOnAngle(time = 0.5, power = -0.45, angle = 145.0)
+                goForwardOnAngle(time = 0.6, power = -0.45, angle = 145.0)
                 rotate(82.0, 0.34)
                 goForwardOnAngle(0.8, 0.55, -90.0)
                 rotate(34.0, 0.34)
