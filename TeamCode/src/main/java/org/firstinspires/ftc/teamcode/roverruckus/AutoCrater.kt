@@ -202,12 +202,12 @@ class AutoCrater : LinearOpMode() {
                 waitForSeconds(0.2)
                 rotate(degrees = 45.0, power = 0.34)
 
-                goForwardOnAngle(time = 1.75, power = -0.55, angle = 145.0)
+                goForwardOnAngle(time = 1.85, power = -0.55, angle = 145.0)
                 dropTeamMarker()
                 waitForSeconds(0.75)
                 goForwardOnAngle(time = 0.1, power = 0.6, angle = 142.0)
                 goForwardOnAngle(time = 0.8, power = 0.8, angle = 142.0)
-                goForwardOnAngle(time = 0.4, power = 0.6, angle = 145.0)
+                goForwardOnAngle(time = 0.5, power = 0.6, angle = 145.0)
                 letDownArm()
             }
             2 -> {
