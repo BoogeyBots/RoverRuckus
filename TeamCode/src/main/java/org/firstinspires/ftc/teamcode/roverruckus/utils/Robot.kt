@@ -12,7 +12,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 
+enum class Motors {
+    LeftFront,
+    RightFront,
+    LeftBack,
+    RightBack,
+    Lift
+}
+
 class Robot(val opMode: OpMode) {
+    lateinit var motors: HashMap<Motors, DcMotor>
+
     val telemetry
         get() = opMode.telemetry
 
@@ -21,17 +31,6 @@ class Robot(val opMode: OpMode) {
 
     val opModeIsActive
         get() = (opMode as LinearOpMode).opModeIsActive()
-
-    lateinit var leftMotor: DcMotor
-    lateinit var rightMotor: DcMotor
-
-    lateinit var leftArm: DcMotor
-    lateinit var rightArm: DcMotor
-
-    lateinit var hookServo: Servo
-    lateinit var lockServo: Servo
-
-    lateinit var markerServo: Servo
 
     lateinit var imu: BNO055IMU
 
@@ -44,29 +43,21 @@ class Robot(val opMode: OpMode) {
     var vuforia: VuforiaLocalizer? = null
     var tfod: TFObjectDetector? = null
 
-    fun init(){
-        leftMotor = hardwareMap.get(DcMotor::class.java, "l_mov")
-        rightMotor = hardwareMap.get(DcMotor::class.java, "r_mov")
+    fun init() {
+        motors = hashMapOf(
+                Motors.LeftFront to hardwareMap.get(DcMotor::class.java, "lf"),
+                Motors.RightFront to hardwareMap.get(DcMotor::class.java, "rf"),
+                Motors.LeftBack to hardwareMap.get(DcMotor::class.java, "lb"),
+                Motors.RightBack to hardwareMap.get(DcMotor::class.java, "rb"),
+                Motors.Lift to hardwareMap.get(DcMotor::class.java, "lift")
+        )
 
-        leftMotor.direction = DcMotorSimple.Direction.REVERSE
-        rightMotor.direction = DcMotorSimple.Direction.FORWARD
-        leftMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        rightMotor.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        leftMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        rightMotor.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        motors[Motors.Lift]?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-        leftArm = hardwareMap.get(DcMotor::class.java, "l_arm")
-        rightArm = hardwareMap.get(DcMotor::class.java, "r_arm")
-
-        leftArm.direction = DcMotorSimple.Direction.FORWARD
-        rightArm.direction = DcMotorSimple.Direction.REVERSE
-        leftArm.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-        rightArm.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-
-        hookServo = hardwareMap.get(Servo::class.java, "hook")
-        lockServo = hardwareMap.get(Servo::class.java, "lock")
-
-        markerServo = hardwareMap.get(Servo::class.java, "marker")
+        motors[Motors.LeftFront]?.direction = DcMotorSimple.Direction.REVERSE
+        motors[Motors.RightFront]?.direction = DcMotorSimple.Direction.FORWARD
+        motors[Motors.LeftBack]?.direction = DcMotorSimple.Direction.REVERSE
+        motors[Motors.RightBack]?.direction = DcMotorSimple.Direction.FORWARD
 
         val imuParams = BNO055IMU.Parameters()
         imuParams.angleUnit = BNO055IMU.AngleUnit.DEGREES
@@ -80,20 +71,28 @@ class Robot(val opMode: OpMode) {
         imu.initialize(imuParams)
     }
 
-    fun setMotorsMode(mode: DcMotor.RunMode, vararg motors: DcMotor) {
+    fun setMotorMode(motor: Motors, mode: DcMotor.RunMode) {
+        this.motors[motor]?.mode = mode
+    }
+
+    fun setMotorsMode(mode: DcMotor.RunMode, vararg motors: Motors) {
         for (motor in motors) {
-            motor.mode = mode
+            setMotorMode(motor, mode)
         }
     }
 
-    fun setMotorsPower(power: Double, vararg motors: DcMotor) {
+    fun setMotorPower(motor: Motors, power: Double) {
+        this.motors[motor]?.power = power
+    }
+
+    fun setMotorsPower(power: Double, vararg motors: Motors) {
         for (motor in motors) {
-            motor.power = power
+            setMotorPower(motor, power)
         }
     }
 
     companion object {
-        const val DEFAULT_MOTOR_SPEED = 0.5
+        const val DEFAULT_MOTOR_POWER = 0.5
         const val MOVEMENT_MOTOR_TICK_COUNT = 1440
         const val WHEEL_DIAMETER = 4.0 // inches
         const val RATIO = 3.0
