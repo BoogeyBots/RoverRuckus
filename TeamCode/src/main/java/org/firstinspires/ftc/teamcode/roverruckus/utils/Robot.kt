@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaRoverRuckus
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 
 enum class Motors {
@@ -40,7 +41,8 @@ class Robot(val opMode: OpMode) {
     var lastAngles: Orientation = Orientation()
     var globalAngle: Double = 0.0
 
-    var vuforia: VuforiaLocalizer? = null
+    var vuforia: VuforiaRoverRuckus? = null
+    var vuforiaLocalizer: VuforiaLocalizer? = null
     var tfod: TFObjectDetector? = null
 
     fun init() {
@@ -93,7 +95,7 @@ class Robot(val opMode: OpMode) {
 
     companion object {
         const val DEFAULT_MOTOR_POWER = 0.5
-        const val MOVEMENT_MOTOR_TICK_COUNT = 1440
+        const val MOVEMENT_MOTOR_TICK_COUNT = 1920
         const val WHEEL_DIAMETER = 4.0 // inches
         const val RATIO = 3.0
         const val WHEEL_CIRCUMFERENCE = Math.PI * 4.0// inches

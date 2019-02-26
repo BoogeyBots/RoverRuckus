@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot
 class Controlled : OpMode() {
     val robot = Robot(this)
 
-    val maxSpeed = 0.6
+    val maxSpeed = 0.9
     val minSpeed = 0.3
     var currentSpeedLimit = minSpeed
     var isLiftUp: Boolean = false
@@ -21,7 +21,7 @@ class Controlled : OpMode() {
     }
 
     override fun loop() {
-        if (robot.motors[Motors.Lift]?.isBusy == false || robot.motors[Motors.Lift]?.power == 0.0) {
+        if ((robot.motors[Motors.Lift]?.mode == DcMotor.RunMode.RUN_TO_POSITION && robot.motors[Motors.Lift]?.isBusy == false) || robot.motors[Motors.Lift]?.power == 0.0) {
             robot.motors[Motors.Lift]?.power = 0.0
             robot.motors[Motors.Lift]?.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             robot.motors[Motors.Lift]?.targetPosition = 0
@@ -43,17 +43,18 @@ class Controlled : OpMode() {
         //================
         //=== MOVEMENT ===
         //================
-        val throttle: Double = gamepad1.left_trigger.toDouble()
-        val brake: Double = gamepad1.right_trigger.toDouble()
-        val forwardMovement = throttle - brake
-        val lateralMovement = -gamepad1.left_stick_x.toDouble()
+        val forwardMovement = -gamepad1.left_stick_y.toDouble()
+        val strafe: Double = -gamepad1.left_stick_x.toDouble()
+        val rotation = gamepad1.right_stick_x.toDouble()
 
-        val movFront = Range.clip(forwardMovement - lateralMovement, -currentSpeedLimit, currentSpeedLimit)
-        val movBack = Range.clip(forwardMovement + lateralMovement, -currentSpeedLimit, currentSpeedLimit)
-        robot.setMotorPower(Motors.LeftFront, movBack)
-        robot.setMotorPower(Motors.RightFront, movFront)
-        robot.setMotorPower(Motors.LeftBack, movBack)
-        robot.setMotorPower(Motors.RightBack, movFront)
+        val movLF = Range.clip(forwardMovement + rotation - strafe, -currentSpeedLimit, currentSpeedLimit)
+        val movRF = Range.clip(forwardMovement - rotation + strafe, -currentSpeedLimit, currentSpeedLimit)
+        val movLB = Range.clip(forwardMovement + rotation + strafe, -currentSpeedLimit, currentSpeedLimit)
+        val movRB = Range.clip(forwardMovement - rotation - strafe, -currentSpeedLimit, currentSpeedLimit)
+        robot.setMotorPower(Motors.LeftFront, movLF)
+        robot.setMotorPower(Motors.RightFront, movRF)
+        robot.setMotorPower(Motors.LeftBack, movLB)
+        robot.setMotorPower(Motors.RightBack, movRB)
         //================
 
         //===============
@@ -72,7 +73,6 @@ class Controlled : OpMode() {
         }
         //===============
 
-
-        telemetry.addData("LIFTING", "IsLiftUp: $isLiftUp, CurrentPos: ${robot.motors[Motors.Lift]?.currentPosition}, TargetPos: ${robot.motors[Motors.Lift]?.targetPosition}, IsBusy: ${robot.motors[Motors.Lift]?.isBusy}, Power: ${robot.motors[Motors.Lift]?.power}")
+        telemetry.addData("LIFTING", "IsLiftUp: $isLiftUp, CurrentPos: ${robot.motors[Motors.Lift]?.currentPosition}, TargetPos: ${robot.motors[Motors.Lift]?.targetPosition}, Power: ${robot.motors[Motors.Lift]?.power}")
     }
 }

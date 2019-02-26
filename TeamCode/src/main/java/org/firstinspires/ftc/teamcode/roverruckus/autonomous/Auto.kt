@@ -25,6 +25,7 @@ class Auto : LinearOpMode() {
         //===========
 
         // TODO land
+        robot.land()
         // TODO recognize gold
         // TODO go forward near sampling field
         // TODO move gold
