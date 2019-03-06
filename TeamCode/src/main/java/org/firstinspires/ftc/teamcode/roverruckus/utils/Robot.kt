@@ -17,7 +17,8 @@ enum class Motors {
     RF,
     LB,
     RB,
-    Lift
+    Lift,
+    IntakeArm
 }
 
 class Robot(val opMode: OpMode) {
@@ -50,10 +51,14 @@ class Robot(val opMode: OpMode) {
                 Motors.RF to hardwareMap.get(DcMotor::class.java, "rf"),
                 Motors.LB to hardwareMap.get(DcMotor::class.java, "lb"),
                 Motors.RB to hardwareMap.get(DcMotor::class.java, "rb"),
-                Motors.Lift to hardwareMap.get(DcMotor::class.java, "lift")
+                Motors.Lift to hardwareMap.get(DcMotor::class.java, "lift"),
+                Motors.IntakeArm to hardwareMap.get(DcMotor::class.java, "i_a")
         )
 
+        motors[Motors.IntakeArm]?.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+
         motors[Motors.Lift]?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        motors[Motors.IntakeArm]?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         motors[Motors.LF]?.direction = DcMotorSimple.Direction.REVERSE
         motors[Motors.RF]?.direction = DcMotorSimple.Direction.FORWARD
