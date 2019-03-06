@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaRoverRuckus
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
+import org.firstinspires.ftc.teamcode.roverruckus.utils.Motors
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot.Companion.LABEL_GOLD_MINERAL
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot.Companion.LABEL_SILVER_MINERAL

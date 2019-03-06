@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
@@ -14,10 +13,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaRoverRuckus
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 
 enum class Motors {
-    LeftFront,
-    RightFront,
-    LeftBack,
-    RightBack,
+    LF,
+    RF,
+    LB,
+    RB,
     Lift
 }
 
@@ -47,19 +46,19 @@ class Robot(val opMode: OpMode) {
 
     fun init() {
         motors = hashMapOf(
-                Motors.LeftFront to hardwareMap.get(DcMotor::class.java, "lf"),
-                Motors.RightFront to hardwareMap.get(DcMotor::class.java, "rf"),
-                Motors.LeftBack to hardwareMap.get(DcMotor::class.java, "lb"),
-                Motors.RightBack to hardwareMap.get(DcMotor::class.java, "rb"),
+                Motors.LF to hardwareMap.get(DcMotor::class.java, "lf"),
+                Motors.RF to hardwareMap.get(DcMotor::class.java, "rf"),
+                Motors.LB to hardwareMap.get(DcMotor::class.java, "lb"),
+                Motors.RB to hardwareMap.get(DcMotor::class.java, "rb"),
                 Motors.Lift to hardwareMap.get(DcMotor::class.java, "lift")
         )
 
         motors[Motors.Lift]?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
-        motors[Motors.LeftFront]?.direction = DcMotorSimple.Direction.REVERSE
-        motors[Motors.RightFront]?.direction = DcMotorSimple.Direction.FORWARD
-        motors[Motors.LeftBack]?.direction = DcMotorSimple.Direction.REVERSE
-        motors[Motors.RightBack]?.direction = DcMotorSimple.Direction.FORWARD
+        motors[Motors.LF]?.direction = DcMotorSimple.Direction.REVERSE
+        motors[Motors.RF]?.direction = DcMotorSimple.Direction.FORWARD
+        motors[Motors.LB]?.direction = DcMotorSimple.Direction.REVERSE
+        motors[Motors.RB]?.direction = DcMotorSimple.Direction.FORWARD
 
         val imuParams = BNO055IMU.Parameters()
         imuParams.angleUnit = BNO055IMU.AngleUnit.DEGREES
@@ -93,12 +92,30 @@ class Robot(val opMode: OpMode) {
         }
     }
 
+    fun setMotorTargetPos(motor: Motors, position: Double) {
+        this.motors[motor]?.targetPosition = position.toInt()
+    }
+
+    fun setMotorsTargetPos(position: Double, vararg motors: Motors) {
+        for (motor in motors) {
+            setMotorTargetPos(motor, position)
+        }
+    }
+
+    fun isMotorBusy(motor: Motors): Boolean {
+        return motors[motor]?.isBusy!!
+    }
+
+    fun areMotorsBusy(vararg motors: Motors): Boolean {
+        return motors.any { m -> isMotorBusy(m) }
+    }
+
     companion object {
         const val DEFAULT_MOTOR_POWER = 0.5
-        const val MOVEMENT_MOTOR_TICK_COUNT = 1920
+        const val MOVEMENT_MOTOR_TICK_COUNT = 1440
         const val WHEEL_DIAMETER = 4.0 // inches
         const val RATIO = 3.0
-        const val WHEEL_CIRCUMFERENCE = Math.PI * 4.0// inches
+        const val WHEEL_CIRCUMFERENCE = Math.PI * WHEEL_DIAMETER // inches
 
         val TFOD_MODEL_ASSET = "RoverRuckus.tflite"
         val LABEL_GOLD_MINERAL = "Gold Mineral"

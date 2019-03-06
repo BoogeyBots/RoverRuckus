@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.Range
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Motors
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot
 
-@TeleOp(name = "Controlled", group = "Rover Ruckus")
+@TeleOp(name = "MANCATIASOCHII", group = "Rover Ruckus")
 class Controlled : OpMode() {
     val robot = Robot(this)
 
@@ -48,13 +48,13 @@ class Controlled : OpMode() {
         val rotation = gamepad1.right_stick_x.toDouble()
 
         val movLF = Range.clip(forwardMovement + rotation - strafe, -currentSpeedLimit, currentSpeedLimit)
-        val movRF = Range.clip(forwardMovement - rotation + strafe, -currentSpeedLimit, currentSpeedLimit)
+        val movRF = Range.clip(forwardMovement - rotation - strafe, -currentSpeedLimit, currentSpeedLimit)
         val movLB = Range.clip(forwardMovement + rotation + strafe, -currentSpeedLimit, currentSpeedLimit)
-        val movRB = Range.clip(forwardMovement - rotation - strafe, -currentSpeedLimit, currentSpeedLimit)
-        robot.setMotorPower(Motors.LeftFront, movLF)
-        robot.setMotorPower(Motors.RightFront, movRF)
-        robot.setMotorPower(Motors.LeftBack, movLB)
-        robot.setMotorPower(Motors.RightBack, movRB)
+        val movRB = Range.clip(forwardMovement - rotation + strafe, -currentSpeedLimit, currentSpeedLimit)
+        robot.setMotorPower(Motors.LF, movLF)
+        robot.setMotorPower(Motors.RF, movRF)
+        robot.setMotorPower(Motors.LB, movLB)
+        robot.setMotorPower(Motors.RB, movRB)
         //================
 
         //===============
@@ -64,9 +64,9 @@ class Controlled : OpMode() {
             robot.setMotorMode(Motors.Lift, DcMotor.RunMode.STOP_AND_RESET_ENCODER)
             // 28 * 3.7 * ()
 
-            robot.motors[Motors.Lift]?.targetPosition = (28 * 3.7 * if (isLiftUp) 72 else -72 ).toInt()
+            robot.motors[Motors.Lift]?.targetPosition = (28 * 3.7 * if (isLiftUp) -72 else 72 ).toInt()
 
-            robot.motors[Motors.Lift]?.power = Robot.DEFAULT_MOTOR_POWER
+            robot.motors[Motors.Lift]?.power = -0.99
             robot.motors[Motors.Lift]?.mode = DcMotor.RunMode.RUN_TO_POSITION
 
             isLiftUp = !isLiftUp
