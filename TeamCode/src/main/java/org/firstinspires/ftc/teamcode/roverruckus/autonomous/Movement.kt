@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot
 import org.firstinspires.ftc.teamcode.roverruckus.utils.toInches
 import kotlin.math.sqrt
 
-fun Robot.land() {
+fun Robot.moveLifting(up: Boolean) {
     /* The hook starts down (near the robot).
     *  Make the lifting move up so the robot goes down.
     *  3.7 (gearbox ration on motor) * 28 (encoder counts per revolution) * rotations
@@ -15,7 +15,7 @@ fun Robot.land() {
     */
     setMotorMode(Lift, DcMotor.RunMode.STOP_AND_RESET_ENCODER)
 
-    motors[Lift]?.targetPosition = (28 * 3.7 * 70).toInt()
+    motors[Lift]?.targetPosition = (28 * 3.7 * (if (up) 70 else -70)).toInt()
 
     motors[Lift]?.power = -0.95
     motors[Lift]?.mode = DcMotor.RunMode.RUN_TO_POSITION
@@ -36,7 +36,7 @@ fun Robot.moveByDistance(centimeters: Double, power: Double = Robot.DEFAULT_MOTO
     setMotorsPower(-power, LF, LB)
     setMotorsMode(DcMotor.RunMode.RUN_TO_POSITION, LF, RF, LB, RB)
 
-    while (areMotorsBusy(LF, RF, LB, RB)) {
+    while (areAllMotorsBusy(LF, RF, LB, RB)) {
         writeMotorsTelemetry()
     }
 
@@ -56,7 +56,7 @@ fun Robot.strafeByDistance(centimeters: Double, power: Double = Robot.DEFAULT_MO
 
     setMotorsMode(DcMotor.RunMode.RUN_TO_POSITION, LF, RF, LB, RB)
 
-    while (areMotorsBusy(LF, RF, LB, RB)) {  }
+    while (areAllMotorsBusy(LF, RF, LB, RB)) {  }
 
     setMotorsPower(0.0, LF, RF, LB, RB)
     setMotorsMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER, LF, RF, LB, RB)

@@ -1,21 +1,19 @@
 package org.firstinspires.ftc.teamcode.roverruckus.autonomous
 
+import android.sax.TextElementListener
 import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.ClassFactory
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaRoverRuckus
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables
+import org.firstinspires.ftc.robotcore.external.navigation.*
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
-import org.firstinspires.ftc.teamcode.roverruckus.utils.Motors
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot.Companion.LABEL_GOLD_MINERAL
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot.Companion.LABEL_SILVER_MINERAL
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot.Companion.TFOD_MODEL_ASSET
 import java.util.Collections.addAll
-
-
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
+import org.firstinspires.ftc.teamcode.roverruckus.utils.elapsedTime
 
 enum class GoldPos {
     Left,
@@ -23,18 +21,23 @@ enum class GoldPos {
     Right
 }
 
+enum class DepotPos {
+    Left,
+    Right
+}
+
 fun Robot.initVuforia() {
     /*
      * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
      */
-    vuforia = VuforiaRoverRuckus()
-    val parameters = VuforiaRoverRuckus.createParameters()
+    val cameraMonitorViewId = hardwareMap.appContext.resources.getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.packageName)
+    val parameters = VuforiaLocalizer.Parameters(cameraMonitorViewId)
 
     parameters.vuforiaLicenseKey = Robot.VUFORIA_KEY
     parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK
 
     //  Instantiate the Vuforia engine
-    vuforiaLocalizer = ClassFactory.getInstance().createVuforia(parameters)
+    vuforia = ClassFactory.getInstance().createVuforia(parameters)
 
     // Loading trackables is not necessary for the Tensor Flow Object Detection engine.
 }
@@ -46,7 +49,7 @@ fun Robot.initTfod() {
 
     tfodParameters.minimumConfidence = 0.75
 
-    tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforiaLocalizer)
+    tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia)
     tfod?.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL)
 }
 
@@ -61,8 +64,7 @@ fun Robot.recognizeGold(): GoldPos {
 
         var foundGold = false
         var stopwatch = ElapsedTime()
-        val MAX_RECOGNITION_TIME = 0.5
-        val TIME_PER_RECOGNITION = 0.25
+        val TIME_PER_RECOGNITION = 1.0
 
         while (opModeIsActive && !foundGold) {
             if (tfod != null) {
@@ -81,17 +83,20 @@ fun Robot.recognizeGold(): GoldPos {
                 }
             }
 
-            if (stopwatch.seconds() >= TIME_PER_RECOGNITION) {
+            if (!foundGold && stopwatch.seconds() >= TIME_PER_RECOGNITION) {
                 when (k) {
                     1 -> {
                         // strafe left
+                        moveByDistance(40.0)
                         k++
                     }
                     2 -> {
                         // strafe right * 2
+                        moveByDistance(-80.0)
                         k++
                     }
                 }
+                stopwatch.reset()
             }
 
             telemetry.update()
@@ -100,24 +105,44 @@ fun Robot.recognizeGold(): GoldPos {
 
     return when (k) {
         1 -> GoldPos.Middle
-        2 -> GoldPos.Left
-        else -> GoldPos.Right
+        2 -> GoldPos.Right
+        else -> GoldPos.Left
     }
 }
 
-fun Robot.recognizeVuMark() {
-    var lastLocation = OpenGLMatrix()
-    val trackables: VuforiaTrackables = vuforiaLocalizer!!.loadTrackablesFromAsset("RoverRuckus")
+fun Robot.recognizeVuMark(): DepotPos {
+    val targetsRoverRuckus  = this.vuforia!!.loadTrackablesFromAsset("RoverRuckus")
 
-    val blueRover = trackables[0]
+    val blueRover = targetsRoverRuckus[0]
     blueRover.name = "Blue-Rover"
-    val redFootprint = trackables[1]
+    val redFootprint = targetsRoverRuckus[1]
     redFootprint.name = "Red-Footprint"
-    val frontCraters = trackables[2]
+    val frontCraters = targetsRoverRuckus[2]
     frontCraters.name = "Front-Craters"
-    val backSpace = trackables[3]
+    val backSpace = targetsRoverRuckus[3]
     backSpace.name = "Back-Space"
 
     val allTrackables = ArrayList<VuforiaTrackable>()
-    allTrackables.addAll(trackables)
+    allTrackables.addAll(targetsRoverRuckus )
+
+    targetsRoverRuckus.activate()
+
+    var foundTarget: String = "NONE"
+    while (foundTarget == "NONE" && opModeIsActive) {
+        for (trackable in allTrackables) {
+            if ((trackable.listener as VuforiaTrackableDefaultListener).isVisible) {
+                telemetry.addData("Visible Target", trackable.name)
+                foundTarget = trackable.name
+                break
+            }
+        }
+
+        telemetry.addData("working", "working")
+        telemetry.update()
+    }
+
+    return when (foundTarget) {
+        "Back-Space", "Front-Craters" -> DepotPos.Right
+        else -> DepotPos.Left
+    }
 }

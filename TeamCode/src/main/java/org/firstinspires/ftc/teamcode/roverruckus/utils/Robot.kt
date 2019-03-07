@@ -41,8 +41,7 @@ class Robot(val opMode: OpMode) {
     var lastAngles: Orientation = Orientation()
     var globalAngle: Double = 0.0
 
-    var vuforia: VuforiaRoverRuckus? = null
-    var vuforiaLocalizer: VuforiaLocalizer? = null
+    var vuforia: VuforiaLocalizer? = null
     var tfod: TFObjectDetector? = null
 
     fun init() {
@@ -109,6 +108,10 @@ class Robot(val opMode: OpMode) {
 
     fun isMotorBusy(motor: Motors): Boolean {
         return motors[motor]?.isBusy!!
+    }
+
+    fun areAllMotorsBusy(vararg motors: Motors): Boolean {
+        return motors.all { m -> isMotorBusy(m) }
     }
 
     fun areMotorsBusy(vararg motors: Motors): Boolean {
