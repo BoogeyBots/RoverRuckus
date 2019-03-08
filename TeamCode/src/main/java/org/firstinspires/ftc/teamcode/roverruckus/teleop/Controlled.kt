@@ -4,9 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.util.Range
-import org.firstinspires.ftc.teamcode.roverruckus.autonomous.writeMotorsTelemetry
+import org.firstinspires.ftc.teamcode.roverruckus.utils.writeMotorsTelemetry
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Motors.*
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot
+import org.firstinspires.ftc.teamcode.roverruckus.utils.clip
 
 @TeleOp(name = "MANCATIASOCHII", group = "Rover Ruckus")
 class Controlled : OpMode() {
@@ -30,9 +31,9 @@ class Controlled : OpMode() {
             robot.motors[Lift]?.targetPosition = 0
         }
 
-        if (!robot.isMotorBusy(IntakeArm) && !canRotateArm) {
-            robot.setMotorPower(IntakeArm, 0.0)
-            robot.setMotorMode(IntakeArm, DcMotor.RunMode.RUN_WITHOUT_ENCODER)
+        if (!robot.isMotorBusy(IntakeRotation) && !canRotateArm) {
+            robot.setMotorPower(IntakeRotation, 0.0)
+            robot.setMotorMode(IntakeRotation, DcMotor.RunMode.RUN_WITHOUT_ENCODER)
             canRotateArm = true
         }
 
@@ -85,22 +86,28 @@ class Controlled : OpMode() {
         //===========================
         //=== INTAKE ARM ROTATION ===
         //===========================
-        if (gamepad2.a && !robot.isMotorBusy(IntakeArm)) {
-            robot.setMotorMode(IntakeArm, DcMotor.RunMode.STOP_AND_RESET_ENCODER)
+        if (gamepad2.a && !robot.isMotorBusy(IntakeRotation)) {
+            robot.setMotorMode(IntakeRotation, DcMotor.RunMode.STOP_AND_RESET_ENCODER)
 
             // 312 * CPR * rotations
-            val targetPos = (312 * 28 * 0.2) * (if (isArmToLander) 1 else -1)
-            robot.setMotorTargetPos(IntakeArm, targetPos)
-            robot.setMotorPower(IntakeArm, -0.2)
-            robot.setMotorsMode(DcMotor.RunMode.RUN_TO_POSITION, IntakeArm)
+            val targetPos = 312 * 28 * (if (isArmToLander) 0.2 else -0.27)
+            robot.setMotorTargetPos(IntakeRotation, targetPos)
+            robot.setMotorPower(IntakeRotation, -0.3)
+            robot.setMotorsMode(DcMotor.RunMode.RUN_TO_POSITION, IntakeRotation)
 
             isArmToLander = !isArmToLander
             canRotateArm = false
         }
-        if (canRotateArm && robot.motors[IntakeArm]?.mode == DcMotor.RunMode.RUN_WITHOUT_ENCODER) {
+        if (canRotateArm && robot.motors[IntakeRotation]?.mode == DcMotor.RunMode.RUN_WITHOUT_ENCODER) {
             val intakeArmPower = -gamepad2.right_stick_y.toDouble()
-            robot.motors[IntakeArm]?.power = Range.clip(intakeArmPower, -0.5, 0.5)
+            robot.motors[IntakeRotation]?.power = Range.clip(intakeArmPower, -0.5, 0.5)
         }
+
+        //==========================
+        //=== INTAKE ARM LUNGIRE ===
+        //==========================
+        val armPower = -gamepad2.left_stick_y.toDouble()
+        robot.motors[IntakeExtension]?.power = armPower.clip(-0.8, 0.8)
 
         telemetry.addData("FMM", "$canRotateArm")
         robot.writeMotorsTelemetry()

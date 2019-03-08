@@ -6,10 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorSimple
+import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaRoverRuckus
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 
 enum class Motors {
@@ -18,11 +18,17 @@ enum class Motors {
     LB,
     RB,
     Lift,
-    IntakeArm
+    IntakeRotation,
+    IntakeExtension
+}
+
+enum class Servos {
+    Phone
 }
 
 class Robot(val opMode: OpMode) {
     lateinit var motors: HashMap<Motors, DcMotor>
+    lateinit var servos: HashMap<Servos, Servo>
 
     val telemetry
         get() = opMode.telemetry
@@ -51,18 +57,25 @@ class Robot(val opMode: OpMode) {
                 Motors.LB to hardwareMap.get(DcMotor::class.java, "lb"),
                 Motors.RB to hardwareMap.get(DcMotor::class.java, "rb"),
                 Motors.Lift to hardwareMap.get(DcMotor::class.java, "lift"),
-                Motors.IntakeArm to hardwareMap.get(DcMotor::class.java, "i_a")
+                Motors.IntakeRotation to hardwareMap.get(DcMotor::class.java, "i_r"),
+                Motors.IntakeExtension to hardwareMap.get(DcMotor::class.java, "i_e")
         )
 
-        motors[Motors.IntakeArm]?.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+        motors[Motors.IntakeRotation]?.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
 
         motors[Motors.Lift]?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
-        motors[Motors.IntakeArm]?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        motors[Motors.IntakeRotation]?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+        motors[Motors.IntakeExtension]?.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
+
 
         motors[Motors.LF]?.direction = DcMotorSimple.Direction.REVERSE
         motors[Motors.RF]?.direction = DcMotorSimple.Direction.FORWARD
         motors[Motors.LB]?.direction = DcMotorSimple.Direction.REVERSE
         motors[Motors.RB]?.direction = DcMotorSimple.Direction.FORWARD
+
+        servos = hashMapOf(
+                Servos.Phone to hardwareMap.get(Servo::class.java, "sph")
+        )
 
         val imuParams = BNO055IMU.Parameters()
         imuParams.angleUnit = BNO055IMU.AngleUnit.DEGREES
@@ -107,7 +120,7 @@ class Robot(val opMode: OpMode) {
     }
 
     fun isMotorBusy(motor: Motors): Boolean {
-        return motors[motor]?.isBusy!!
+        return motors[motor]?.mode == DcMotor.RunMode.RUN_TO_POSITION && motors[motor]?.isBusy!!
     }
 
     fun areAllMotorsBusy(vararg motors: Motors): Boolean {

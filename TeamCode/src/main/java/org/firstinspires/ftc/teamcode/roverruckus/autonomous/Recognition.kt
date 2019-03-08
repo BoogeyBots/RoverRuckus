@@ -64,9 +64,9 @@ fun Robot.recognizeGold(): GoldPos {
 
         var foundGold = false
         var stopwatch = ElapsedTime()
-        val TIME_PER_RECOGNITION = 1.0
+        val TIME_PER_RECOGNITION = 0.5
 
-        while (opModeIsActive && !foundGold) {
+        loop@ while (opModeIsActive && !foundGold) {
             if (tfod != null) {
                 val updatedRecognitions = tfod?.updatedRecognitions
                 if (updatedRecognitions != null) {
@@ -92,8 +92,9 @@ fun Robot.recognizeGold(): GoldPos {
                     }
                     2 -> {
                         // strafe right * 2
-                        moveByDistance(-80.0)
+                        moveByDistance(-75.0)
                         k++
+                        break@loop
                     }
                 }
                 stopwatch.reset()
