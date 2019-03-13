@@ -53,9 +53,9 @@ class Controlled : OpMode() {
         //================
         //=== MOVEMENT ===
         //================
-        val forwardMovement = -gamepad1.left_stick_y.toDouble()
+        val forwardMovement = gamepad1.left_trigger.toDouble() - gamepad1.right_trigger.toDouble()
         val strafe: Double = -gamepad1.left_stick_x.toDouble()
-        val rotation = gamepad1.right_stick_x.toDouble()
+        val rotation = gamepad1.right_stick_x
 
         val movLF = Range.clip(forwardMovement + rotation + strafe, -currentSpeedLimit, currentSpeedLimit)
         val movRF = Range.clip(forwardMovement - rotation - strafe, -currentSpeedLimit, currentSpeedLimit)
@@ -70,7 +70,7 @@ class Controlled : OpMode() {
         //===============
         //=== LIFTING ===
         //===============
-        if (gamepad1.a && !robot.isMotorBusy(Lift)) {
+        if (gamepad1.x && !robot.isMotorBusy(Lift)) {
             robot.setMotorMode(Lift, DcMotor.RunMode.STOP_AND_RESET_ENCODER)
             // 28 * 3.7 * ()
 
@@ -90,7 +90,7 @@ class Controlled : OpMode() {
             robot.setMotorMode(IntakeRotation, DcMotor.RunMode.STOP_AND_RESET_ENCODER)
 
             // 312 * CPR * rotations
-            val targetPos = 312 * 28 * (if (isArmToLander) 0.2 else -0.27)
+            val targetPos = 312 * 28 * (if (isArmToLander) 0.22 else -0.22)
             robot.setMotorTargetPos(IntakeRotation, targetPos)
             robot.setMotorPower(IntakeRotation, -0.3)
             robot.setMotorsMode(DcMotor.RunMode.RUN_TO_POSITION, IntakeRotation)
@@ -99,7 +99,7 @@ class Controlled : OpMode() {
             canRotateArm = false
         }
         if (canRotateArm && robot.motors[IntakeRotation]?.mode == DcMotor.RunMode.RUN_WITHOUT_ENCODER) {
-            val intakeArmPower = -gamepad2.right_stick_y.toDouble()
+            val intakeArmPower = gamepad2.right_stick_y.toDouble()
             robot.motors[IntakeRotation]?.power = Range.clip(intakeArmPower, -0.5, 0.5)
         }
 

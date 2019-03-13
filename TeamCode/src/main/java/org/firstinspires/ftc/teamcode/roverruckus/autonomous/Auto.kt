@@ -53,7 +53,7 @@ class Auto : LinearOpMode() {
 
         when (goldPos) {
             GoldPos.Left -> {
-                robot.moveByDistance(-65.0, 0.75)
+                robot.moveByDistance(-60.0, 0.75)
             }
             GoldPos.Middle -> {
                 robot.moveByDistance(-110.0, 0.75)
@@ -76,9 +76,18 @@ class Auto : LinearOpMode() {
         when (depotPos) {
             DepotPos.Left -> {
                 robot.moveByDistance(-150.0, 0.8)
-                robot.strafeByDistance(-10.0)
+                robot.strafeByDistance(-5.0)
                 wait(1.0)
-                robot.moveByDistance(200.0, 0.8)
+                //robot.moveByDistance(200.0, 0.8)
+                val aaa = GlobalScope.launch {
+                    robot.moveForSeconds(4.0, 0.8)
+                }
+                robot.motors[Motors.RF]!!.power += 0.1
+                robot.motors[Motors.LB]!!.power += 0.1
+                runParallel {
+                    robot.extendArm()
+                }
+                aaa.join()
             }
             DepotPos.Right -> {
 

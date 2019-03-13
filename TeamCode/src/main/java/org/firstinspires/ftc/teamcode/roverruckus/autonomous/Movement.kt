@@ -2,16 +2,16 @@ package org.firstinspires.ftc.teamcode.roverruckus.autonomous
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.util.ElapsedTime
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation
+import org.firstinspires.ftc.teamcode.roverruckus.utils.*
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Motors.*
-import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot
-import org.firstinspires.ftc.teamcode.roverruckus.utils.toInches
-import org.firstinspires.ftc.teamcode.roverruckus.utils.wait
-import org.firstinspires.ftc.teamcode.roverruckus.utils.writeMotorsTelemetry
 import kotlin.math.sqrt
+
+val stopwatch = ElapsedTime()
 
 fun Robot.moveLifting(up: Boolean) {
     /* The hook starts down (near the robot).
@@ -31,6 +31,20 @@ fun Robot.moveLifting(up: Boolean) {
 
     motors[Lift]?.power = 0.0
     motors[Lift]?.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+}
+
+
+fun Robot.extendArm() {
+    setMotorMode(IntakeExtension, DcMotor.RunMode.STOP_AND_RESET_ENCODER)
+
+    setMotorTargetPos(IntakeExtension, 1440.0 * 0.2)
+    setMotorPower(IntakeExtension, Robot.DEFAULT_MOTOR_POWER)
+    while (isMotorBusy(IntakeExtension) && opModeIsActive) {
+        writeMotorsTelemetry()
+    }
+
+    setMotorPower(IntakeExtension, 0.0)
+    setMotorMode(IntakeExtension, DcMotor.RunMode.RUN_WITHOUT_ENCODER)
 }
 
 fun Robot.moveByDistance(centimeters: Double, power: Double = Robot.DEFAULT_MOTOR_POWER) {
@@ -67,6 +81,24 @@ fun Robot.strafeByDistance(centimeters: Double, power: Double = Robot.DEFAULT_MO
 
     setMotorsPower(0.0, LF, RF, LB, RB)
     setMotorsMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER, LF, RF, LB, RB)
+}
+
+fun Robot.moveForSeconds(time: Double, power: Double = Robot.DEFAULT_MOTOR_POWER) {
+    setMotorsPower(power, LF, RF, LB, RB)
+
+    stopwatch.reset()
+    while (stopwatch.seconds() < time && opModeIsActive) {
+        writeMotorsTelemetry()
+    }
+}
+
+fun Robot.strafeForSeconds(time: Double, power: Double = Robot.DEFAULT_MOTOR_POWER) {
+    setMotorsPower(power, RF, RB)
+    setMotorsPower(-power, LF, LB)
+
+    while (stopwatch.seconds() < time && opModeIsActive) {
+        writeMotorsTelemetry()
+    }
 }
 
 private fun Robot.resetAngle() {
