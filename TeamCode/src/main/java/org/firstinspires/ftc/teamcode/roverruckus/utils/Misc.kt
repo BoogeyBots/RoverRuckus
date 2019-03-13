@@ -43,3 +43,7 @@ suspend fun finishAllJobs() {
 fun Double.clip(min: Double, max: Double): Double {
     return Range.clip(this, min, max)
 }
+
+fun Boolean.toInt() = if (this) 1 else 0
+
+fun Boolean.toDouble() = if (this) 1.0 else 0.0

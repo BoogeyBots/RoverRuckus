@@ -19,7 +19,8 @@ enum class Motors {
     RB,
     Lift,
     IntakeRotation,
-    IntakeExtension
+    IntakeExtension,
+    Sweeper
 }
 
 enum class Servos {
@@ -58,7 +59,8 @@ class Robot(val opMode: OpMode) {
                 Motors.RB to hardwareMap.get(DcMotor::class.java, "rb"),
                 Motors.Lift to hardwareMap.get(DcMotor::class.java, "lift"),
                 Motors.IntakeRotation to hardwareMap.get(DcMotor::class.java, "i_r"),
-                Motors.IntakeExtension to hardwareMap.get(DcMotor::class.java, "i_e")
+                Motors.IntakeExtension to hardwareMap.get(DcMotor::class.java, "i_e"),
+                Motors.Sweeper to hardwareMap.get(DcMotor::class.java, "sweeper")
         )
 
         motors[Motors.IntakeRotation]?.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER

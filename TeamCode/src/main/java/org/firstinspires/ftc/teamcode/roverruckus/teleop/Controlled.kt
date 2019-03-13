@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.roverruckus.utils.writeMotorsTelemetry
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Motors.*
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot
 import org.firstinspires.ftc.teamcode.roverruckus.utils.clip
+import org.firstinspires.ftc.teamcode.roverruckus.utils.toDouble
 
 @TeleOp(name = "MANCATIASOCHII", group = "Rover Ruckus")
 class Controlled : OpMode() {
@@ -108,6 +109,12 @@ class Controlled : OpMode() {
         //==========================
         val armPower = -gamepad2.left_stick_y.toDouble()
         robot.motors[IntakeExtension]?.power = armPower.clip(-0.8, 0.8)
+
+        //===============
+        //=== SWEEPER ===
+        //===============
+        val sweeperPower = gamepad2.left_bumper.toDouble() - gamepad2.right_bumper.toDouble()
+        robot.motors[Sweeper]?.power = sweeperPower.clip(-0.5, 0.5)
 
         telemetry.addData("FMM", "$canRotateArm")
         robot.writeMotorsTelemetry()
