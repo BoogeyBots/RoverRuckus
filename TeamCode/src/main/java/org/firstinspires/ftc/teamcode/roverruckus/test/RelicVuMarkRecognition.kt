@@ -40,6 +40,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables
  */
 
 @TeleOp(name = "Concept: VuMark Id", group = "Test")
+@Disabled
 class ConceptVuMarkIdentification : LinearOpMode() {
 
     internal var lastLocation: OpenGLMatrix? = null

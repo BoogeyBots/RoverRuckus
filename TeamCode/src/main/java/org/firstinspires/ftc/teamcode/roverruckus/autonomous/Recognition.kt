@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.roverruckus.autonomous
 
 import android.sax.TextElementListener
 import com.qualcomm.robotcore.util.ElapsedTime
+import com.vuforia.CameraDevice
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.navigation.*
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
@@ -13,6 +14,7 @@ import java.util.Collections.addAll
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix
+import org.firstinspires.ftc.teamcode.roverruckus.utils.Servos
 import org.firstinspires.ftc.teamcode.roverruckus.utils.elapsedTime
 
 enum class GoldPos {
@@ -47,13 +49,15 @@ fun Robot.initTfod() {
             "tfodMonitorViewId", "id", hardwareMap.appContext.packageName)
     val tfodParameters = TFObjectDetector.Parameters(tfodMonitorViewId)
 
-    tfodParameters.minimumConfidence = 0.75
+    tfodParameters.minimumConfidence = 0.5
 
     tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia)
     tfod?.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL)
 }
 
 fun Robot.recognizeGold(): GoldPos {
+    CameraDevice.getInstance().setFlashTorchMode(true)
+
     var k = 1
 
     if (opModeIsActive) {
@@ -63,7 +67,7 @@ fun Robot.recognizeGold(): GoldPos {
         }
 
         var foundGold = false
-        var stopwatch = ElapsedTime()
+        val stopwatch = ElapsedTime()
         val TIME_PER_RECOGNITION = 0.5
 
         loop@ while (opModeIsActive && !foundGold) {
@@ -87,12 +91,12 @@ fun Robot.recognizeGold(): GoldPos {
                 when (k) {
                     1 -> {
                         // strafe left
-                        moveByDistance(40.0)
+                        moveByDistance(-35.0)
                         k++
                     }
                     2 -> {
                         // strafe right * 2
-                        moveByDistance(-75.0)
+                        moveByDistance(-45.0)
                         k++
                         break@loop
                     }
@@ -104,9 +108,11 @@ fun Robot.recognizeGold(): GoldPos {
         }
     }
 
+    CameraDevice.getInstance().setFlashTorchMode(false)
+
     return when (k) {
-        1 -> GoldPos.Middle
-        2 -> GoldPos.Right
+        1 -> GoldPos.Right
+        2 -> GoldPos.Middle
         else -> GoldPos.Left
     }
 }

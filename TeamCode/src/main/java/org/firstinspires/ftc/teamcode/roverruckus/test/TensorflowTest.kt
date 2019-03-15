@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.roverruckus.autonomous
+package org.firstinspires.ftc.teamcode.roverruckus.test
 
 /* Copyright (c) 2018 FIRST. All rights reserved.
  *
@@ -35,7 +35,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.robotcore.external.ClassFactory
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
 
 /**

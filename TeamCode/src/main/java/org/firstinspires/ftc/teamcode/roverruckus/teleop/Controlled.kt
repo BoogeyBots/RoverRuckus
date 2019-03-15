@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode.roverruckus.teleop
 
+import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
+import com.qualcomm.robotcore.util.ElapsedTime
 import com.qualcomm.robotcore.util.Range
-import org.firstinspires.ftc.teamcode.roverruckus.utils.writeMotorsTelemetry
+import org.firstinspires.ftc.teamcode.roverruckus.utils.*
 import org.firstinspires.ftc.teamcode.roverruckus.utils.Motors.*
-import org.firstinspires.ftc.teamcode.roverruckus.utils.Robot
-import org.firstinspires.ftc.teamcode.roverruckus.utils.clip
-import org.firstinspires.ftc.teamcode.roverruckus.utils.toDouble
 
 @TeleOp(name = "MANCATIASOCHII", group = "Rover Ruckus")
 class Controlled : OpMode() {
@@ -17,12 +17,17 @@ class Controlled : OpMode() {
     val maxSpeed = 0.9
     val minSpeed = 0.3
     var currentSpeedLimit = minSpeed
-    var isLiftUp: Boolean = false
+    var isLiftUp: Boolean = true
     var isArmToLander: Boolean = false
     var canRotateArm: Boolean = true
+    var sweeperLockStopwatch = ElapsedTime()
+    val SWEEPER_LOCK_TIME = 0.2
+    var sweeperLockOpen = false
 
     override fun init() {
         robot.init()
+        telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
+        robot.telemetry = telemetry as MultipleTelemetry
     }
 
     override fun loop() {
@@ -30,12 +35,6 @@ class Controlled : OpMode() {
             robot.motors[Lift]?.power = 0.0
             robot.motors[Lift]?.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
             robot.motors[Lift]?.targetPosition = 0
-        }
-
-        if (!robot.isMotorBusy(IntakeRotation) && !canRotateArm) {
-            robot.setMotorPower(IntakeRotation, 0.0)
-            robot.setMotorMode(IntakeRotation, DcMotor.RunMode.RUN_WITHOUT_ENCODER)
-            canRotateArm = true
         }
 
         //======================
@@ -55,7 +54,7 @@ class Controlled : OpMode() {
         //=== MOVEMENT ===
         //================
         val forwardMovement = gamepad1.left_trigger.toDouble() - gamepad1.right_trigger.toDouble()
-        val strafe: Double = -gamepad1.left_stick_x.toDouble()
+        val strafe: Double = gamepad1.left_stick_x.toDouble()
         val rotation = gamepad1.right_stick_x
 
         val movLF = Range.clip(forwardMovement + rotation + strafe, -currentSpeedLimit, currentSpeedLimit)
@@ -71,11 +70,22 @@ class Controlled : OpMode() {
         //===============
         //=== LIFTING ===
         //===============
-        if (gamepad1.x && !robot.isMotorBusy(Lift)) {
+        if (gamepad1.x && !robot.isMotorBusy(Lift) && isLiftUp) {
             robot.setMotorMode(Lift, DcMotor.RunMode.STOP_AND_RESET_ENCODER)
             // 28 * 3.7 * ()
 
-            robot.motors[Lift]?.targetPosition = (28 * 3.7 * if (isLiftUp) -70 else 70).toInt()
+            robot.motors[Lift]?.targetPosition = (28 * 3.7 * -70).toInt()
+
+            robot.motors[Lift]?.power = -0.99
+            robot.motors[Lift]?.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+            isLiftUp = !isLiftUp
+        }
+        if (gamepad1.y && !robot.isMotorBusy(Lift) && !isLiftUp) {
+            robot.setMotorMode(Lift, DcMotor.RunMode.STOP_AND_RESET_ENCODER)
+            // 28 * 3.7 * ()
+
+            robot.motors[Lift]?.targetPosition = (28 * 3.7 * 70).toInt()
 
             robot.motors[Lift]?.power = -0.99
             robot.motors[Lift]?.mode = DcMotor.RunMode.RUN_TO_POSITION
@@ -87,22 +97,8 @@ class Controlled : OpMode() {
         //===========================
         //=== INTAKE ARM ROTATION ===
         //===========================
-        if (gamepad2.a && !robot.isMotorBusy(IntakeRotation)) {
-            robot.setMotorMode(IntakeRotation, DcMotor.RunMode.STOP_AND_RESET_ENCODER)
-
-            // 312 * CPR * rotations
-            val targetPos = 312 * 28 * (if (isArmToLander) 0.22 else -0.22)
-            robot.setMotorTargetPos(IntakeRotation, targetPos)
-            robot.setMotorPower(IntakeRotation, -0.3)
-            robot.setMotorsMode(DcMotor.RunMode.RUN_TO_POSITION, IntakeRotation)
-
-            isArmToLander = !isArmToLander
-            canRotateArm = false
-        }
-        if (canRotateArm && robot.motors[IntakeRotation]?.mode == DcMotor.RunMode.RUN_WITHOUT_ENCODER) {
-            val intakeArmPower = gamepad2.right_stick_y.toDouble()
-            robot.motors[IntakeRotation]?.power = Range.clip(intakeArmPower, -0.5, 0.5)
-        }
+        val intakeArmPower = gamepad2.right_stick_y.toDouble()
+        robot.motors[IntakeRotation]?.power = Range.clip(intakeArmPower, -0.65, 0.65)
 
         //==========================
         //=== INTAKE ARM LUNGIRE ===
@@ -114,9 +110,25 @@ class Controlled : OpMode() {
         //=== SWEEPER ===
         //===============
         val sweeperPower = gamepad2.left_bumper.toDouble() - gamepad2.right_bumper.toDouble()
-        robot.motors[Sweeper]?.power = sweeperPower.clip(-0.5, 0.5)
+        robot.motors[Sweeper]?.power = sweeperPower.clip(-0.75, 0.75)
 
-        telemetry.addData("FMM", "$canRotateArm")
+        //====================
+        //=== SWEEPER LOCK ===
+        //====================
+        if (sweeperLockStopwatch.seconds() >= SWEEPER_LOCK_TIME) {
+            if (gamepad1.b) {
+                sweeperLockStopwatch.reset()
+                if (sweeperLockOpen) {
+                    robot.servos[Servos.SweeperLock]?.position = 1.0
+                } else {
+                    robot.servos[Servos.SweeperLock]?.position = 0.65
+                }
+
+                sweeperLockOpen = !sweeperLockOpen
+            }
+        }
+
         robot.writeMotorsTelemetry()
+        robot.writeServosTelemetry()
     }
 }

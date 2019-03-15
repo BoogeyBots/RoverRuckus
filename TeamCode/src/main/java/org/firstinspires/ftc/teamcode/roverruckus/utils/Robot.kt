@@ -4,13 +4,16 @@ import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.OpMode
-import com.qualcomm.robotcore.hardware.DcMotor
-import com.qualcomm.robotcore.hardware.DcMotorSimple
-import com.qualcomm.robotcore.hardware.Servo
+import org.firstinspires.ftc.robotcore.external.Telemetry
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector
+import com.acmerobotics.dashboard.FtcDashboard
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
+import com.qualcomm.robotcore.hardware.*
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
+
 
 enum class Motors {
     LF,
@@ -24,17 +27,23 @@ enum class Motors {
 }
 
 enum class Servos {
-    Phone
+    Phone,
+    SweeperLock
+}
+
+enum class DistanceSensors {
+    Left,
+    Right
 }
 
 class Robot(val opMode: OpMode) {
     lateinit var motors: HashMap<Motors, DcMotor>
     lateinit var servos: HashMap<Servos, Servo>
+    lateinit var distanceSensors: HashMap<DistanceSensors, DistanceSensor>
 
-    val telemetry
-        get() = opMode.telemetry
+    lateinit var telemetry: MultipleTelemetry
 
-    val hardwareMap
+    val hardwareMap: HardwareMap
         get() = opMode.hardwareMap
 
     val opModeIsActive
@@ -58,8 +67,8 @@ class Robot(val opMode: OpMode) {
                 Motors.LB to hardwareMap.get(DcMotor::class.java, "lb"),
                 Motors.RB to hardwareMap.get(DcMotor::class.java, "rb"),
                 Motors.Lift to hardwareMap.get(DcMotor::class.java, "lift"),
-                Motors.IntakeRotation to hardwareMap.get(DcMotor::class.java, "i_r"),
-                Motors.IntakeExtension to hardwareMap.get(DcMotor::class.java, "i_e"),
+                Motors.IntakeRotation to hardwareMap.get(DcMotor::class.java, "ir"),
+                Motors.IntakeExtension to hardwareMap.get(DcMotor::class.java, "ie"),
                 Motors.Sweeper to hardwareMap.get(DcMotor::class.java, "sweeper")
         )
 
@@ -76,7 +85,13 @@ class Robot(val opMode: OpMode) {
         motors[Motors.RB]?.direction = DcMotorSimple.Direction.FORWARD
 
         servos = hashMapOf(
-                Servos.Phone to hardwareMap.get(Servo::class.java, "sph")
+                Servos.Phone to hardwareMap.get(Servo::class.java, "sph"),
+                Servos.SweeperLock to hardwareMap.get(Servo::class.java, "sl")
+        )
+
+        distanceSensors = hashMapOf(
+                DistanceSensors.Left to hardwareMap.get(DistanceSensor::class.java, "distl"),
+                DistanceSensors.Right to hardwareMap.get(DistanceSensor::class.java, "distr")
         )
 
         val imuParams = BNO055IMU.Parameters()
@@ -131,6 +146,10 @@ class Robot(val opMode: OpMode) {
 
     fun areMotorsBusy(vararg motors: Motors): Boolean {
         return motors.any { m -> isMotorBusy(m) }
+    }
+
+    fun getDistanceFor(sensor: DistanceSensors, unit: DistanceUnit = DistanceUnit.CM): Double {
+        return distanceSensors[sensor]!!.getDistance(unit)
     }
 
     companion object {
