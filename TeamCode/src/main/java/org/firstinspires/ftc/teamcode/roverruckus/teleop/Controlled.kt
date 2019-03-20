@@ -55,7 +55,7 @@ class Controlled : OpMode() {
         //================
         val forwardMovement = gamepad1.left_trigger.toDouble() - gamepad1.right_trigger.toDouble()
         val strafe: Double = gamepad1.left_stick_x.toDouble()
-        val rotation = gamepad1.right_stick_x
+        val rotation = -gamepad1.right_stick_x
 
         val movLF = Range.clip(forwardMovement + rotation + strafe, -currentSpeedLimit, currentSpeedLimit)
         val movRF = Range.clip(forwardMovement - rotation - strafe, -currentSpeedLimit, currentSpeedLimit)
@@ -97,14 +97,14 @@ class Controlled : OpMode() {
         //===========================
         //=== INTAKE ARM ROTATION ===
         //===========================
-        val intakeArmPower = gamepad2.right_stick_y.toDouble()
+        val intakeArmPower = -gamepad2.right_stick_y.toDouble()
         robot.motors[IntakeRotation]?.power = Range.clip(intakeArmPower, -0.65, 0.65)
 
         //==========================
         //=== INTAKE ARM LUNGIRE ===
         //==========================
         val armPower = -gamepad2.left_stick_y.toDouble()
-        robot.motors[IntakeExtension]?.power = armPower.clip(-0.8, 0.8)
+        robot.motors[IntakeExtension]?.power = armPower.clip(-0.4, 0.4)
 
         //===============
         //=== SWEEPER ===
